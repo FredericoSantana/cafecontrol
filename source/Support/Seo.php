@@ -33,8 +33,6 @@ class Seo
         )->publisher(
             CONF_SOCIAL_FACEBOOK_PAGE,
             CONF_SOCIAL_FACEBOOK_AUTHOR,
-            CONF_SOCIAL_GOOGLE_PAGE,
-            CONF_SOCIAL_GOOGLE_AUTHOR
         )->facebook(
             CONF_SOCIAL_FACEBOOK_APP
         );

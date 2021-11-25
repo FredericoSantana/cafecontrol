@@ -2,13 +2,28 @@
 
 namespace Source\Core;
 
+use Source\Support\Seo;
+
 /**
- * FSPHP | Class Controller
+ * Café Control | Class Controller
  *
- * @author Robson V. Leite <cursos@upinside.com.br>
+ * @author Frederico Santana <fredericosantana@hotmail.com.br>
  * @package Source\Core
  */
 class Controller
 {
+  /** @var View */
+  protected $view;
 
+  /** @var Seo */
+  protected $seo;
+
+  /**
+   * @param string|null $pathToView
+   */
+  public function __construct(string $pathToView = null)
+  {
+    $this->view = new View($pathToView);
+    $this->seo = new Seo();
+  }
 }

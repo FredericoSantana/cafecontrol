@@ -22,7 +22,7 @@ class View
      */
     public function __construct(string $path = CONF_VIEW_PATH, string $ext = CONF_VIEW_EXT)
     {
-        $this->engine = Engine::create($path, $ext);
+        $this->engine = new Engine($path, $ext);
     }
 
     /**
