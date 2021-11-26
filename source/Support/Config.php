@@ -11,7 +11,7 @@ const CONF_DB_NAME = "mvcoo";
  * PROJECT URLs
  */
 const CONF_URL_BASE = "https://www.cafecontrol.com";
-const CONF_URL_TEST = "http://localhost/cafecontrol";
+const CONF_URL_TEST = "https://www.localhost/cafecontrol";
 const CONF_URL_ADMIN = "/admin";
 
 /**
@@ -27,8 +27,10 @@ const CONF_SITE_DOMAIN = "wwww.freddev.com";
 const CONF_SOCIAL_TWITTER_CREATOR = "@fred";
 const CONF_SOCIAL_TWITTER_PUBLISHER = "@fred";
 const CONF_SOCIAL_FACEBOOK_APP = "586693779218787";
-const CONF_SOCIAL_FACEBOOK_PAGE = "FredDev";
+const CONF_SOCIAL_FACEBOOK_PAGE = "frederico.pereira.9";
 const CONF_SOCIAL_FACEBOOK_AUTHOR = "frederico.pereira.9";
+const CONF_SOCIAL_INSTAGRAM_PAGE = "frediara";
+const CONF_SOCIAL_YOUTUBE_PAGE = "frederico.pereira.9";
 
 /**
  * DATES
