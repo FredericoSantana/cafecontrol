@@ -238,7 +238,7 @@ body {
     right: 0;
     position: absolute;
     z-index: var(--index-back);
-    background: url("../images/home-featured.jpg") top center no-repeat;
+    background: url("../../themes/cafecontrol/assets/images/home-featured.jpg") top center no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
@@ -499,7 +499,7 @@ body {
     top: 0;
     right: 0;
     bottom: 0;
-    background: url("../images/home-featured.jpg") top center;
+    background: url("../../themes/cafecontrol/assets/images/home-featured.jpg") top center;
     background-size: cover;
     background-attachment: fixed;
     z-index: var(--index-back);
@@ -546,7 +546,7 @@ body {
 
 /*opt out*/
 .footer_optout {
-    background: url("../images/footer-bg.jpg") top center no-repeat;
+    background: url("../../themes/cafecontrol/assets/images/footer-bg.jpg") top center no-repeat;
     background-size: cover;
     padding-top: 20px;
     margin-top: 40px;
