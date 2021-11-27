@@ -1,14 +1,13 @@
-<?php $this->layout('theme'); ?>
-<!--404-->
+<?php $this->layout("_theme"); ?>
+
 <article class="not_found">
     <div class="container content">
         <header class="not_found_header">
-            <p class="error">404</p>
-            <h1>Ooops. Essa página não existe :/</h1>
-            <p>Sentimos muito, mas o conteúdo que você tentou acessar não existe, está indisponível ou foi removido
-                :/</p>
-            <a class="not_found_btn gradient gradient-green gradient-hover transition radius" title="home" href="<?= url(); ?>">Continue
-                navegando</a>
+            <p class="error">&bull;<?= $error->code; ?>&bull;</p>
+            <h1><?= $error->title; ?></h1>
+            <p><?= $error->message; ?></p>
+            <a class="not_found_btn gradient gradient-green gradient-hover transition radius"
+               title="<?= $error->linkTitle; ?>" href="<?= $error->link; ?>"><?= $error->linkTitle; ?></a>
         </header>
     </div>
 </article>

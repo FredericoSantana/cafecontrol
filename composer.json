@@ -17,9 +17,9 @@
       "Source\\": "source/"
     },
     "files": [
-      "source/Support/Config.php",
-      "source/Support/Helpers.php",
-      "source/Support/Minify.php"
+      "source/Boot/Config.php",
+      "source/Boot/Helpers.php",
+      "source/Boot/Minify.php"
     ]
   },
   "require": {

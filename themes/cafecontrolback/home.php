@@ -1,5 +1,4 @@
-<?php $this->layout("_theme"); ?>
-
+<?php $this->layout('theme'); ?>
 <!--FEATURED-->
 <article class="home_featured">
     <div class="home_featured_content container content">
@@ -8,14 +7,13 @@
             <p>Cadastre-se, lance suas contas e conte com automações poderosas para gerenciar tudo enquanto você toma um
                 bom café!</p>
             <p><span data-go=".home_optin"
-                     class="home_featured_btn gradient gradient-green gradient-hover radius transition icon-check-square-o">Criar
-                    minha conta e começar a controlar</span></p>
+                     class="home_featured_btn gradient gradient-green gradient-hover radius transition icon-check-square-o">Criar minha conta e começar a controlar</span></p>
             <p class="features">Rápido | Simples | Gratuito</p>
         </header>
     </div>
 
     <div class="home_featured_app">
-        <img src="<?= theme("/assets/images/home-app.jpg"); ?>" alt="CafeControl" title="CafeControl"/>
+        <img src="<?= theme("assets/images/home-app.jpg"); ?>" alt="CafeControl" title="CafeControl"/>
     </div>
 </article>
 
@@ -30,8 +28,7 @@
         <div class="home_features_content">
             <article class="radius">
                 <header>
-                    <img alt="Contas a receber" title="Contas a receber"
-                         src="<?= theme("/assets/images/home_receive.jpg"); ?>"/>
+                    <img alt="Contas a receber" title="Contas a receber" src="<?= theme("assets/images/home_receive.jpg"); ?>"/>
                     <h3>Contas a receber</h3>
                     <p>Cadastre seus recebíveis, use as automações para salários, contratos e recorrentes e comece a
                         controlar tudo que entra em sua conta. É rápido!</p>
@@ -40,8 +37,7 @@
 
             <article class="radius">
                 <header>
-                    <img alt="Contas a pagar" title="Contas a pagar"
-                         src="<?= theme("/assets/images/home_pay.jpg"); ?>"/>
+                    <img alt="Contas a pagar" title="Contas a pagar" src="<?= theme("assets/images/home_pay.jpg"); ?>"/>
                     <h3>Contas a pagar</h3>
                     <p>Cadastre suas contas a pagar, despesas, use as automações para contas fixas e parcelamentos e
                         controle tudo que sai de sua conta. É simples!</p>
@@ -50,8 +46,7 @@
 
             <article class="radius">
                 <header>
-                    <img alt="Controle e relatórios" title="Controle e relatórios"
-                         src="<?= theme("/assets/images/home_control.jpg"); ?>"/>
+                    <img alt="Controle e relatórios" title="Controle e relatórios" src="<?= theme("assets/images/home_control.jpg"); ?>"/>
                     <h3>Controle e relatórios</h3>
                     <p>Contas e recebíveis cadastrados? Pronto, agora você tem tudo controlado enquanto toma um bom café
                         e acompanha os relatórios. É gratuito!</p>
@@ -76,7 +71,7 @@
         <div class="home_optin_content_flex">
             <span class="icon icon-check-square-o icon-notext"></span>
             <h4>Crie sua conta gratuitamente:</h4>
-            <form action="<?= url("/cadastrar"); ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= url("cadastro"); ?>" method="post" enctype="multipart/form-data">
                 <input type="text" name="first_name" placeholder="Primeiro nome:"/>
                 <input type="text" name="last_name" placeholder="Último nome:"/>
                 <input type="email" name="email" placeholder="Melhor e-mail:"/>
@@ -99,7 +94,7 @@
     <div class="home_video_modal j_modal_close">
         <div class="home_video_modal_box">
             <div class="embed">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/<?= $video; ?>?rel=0&amp;showinfo=0"
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/lDZGl9Wdc7Y?rel=0&amp;showinfo=0"
                         frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
         </div>
@@ -116,7 +111,7 @@
 
         <div class="blog_articles">
             <?php for ($i = 0; $i <= 5; $i++): ?>
-                <?php $this->insert("blog-list"); ?>
+              <?php $this->insert('views/blog-post'); ?>
             <?php endfor; ?>
         </div>
     </div>

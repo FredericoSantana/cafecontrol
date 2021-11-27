@@ -17,7 +17,9 @@ const CONF_URL_ADMIN = "/admin";
 /**
  * SITE
  */
-const CONF_SITE_NAME = "FredDev";
+const CONF_SITE_NAME = "Café Control";
+const CONF_SITE_TITLE = "Gerencie suas contas com o melhor café.";
+const CONF_SITE_DESC = "O CafeControl é um gerenciador de contas simples, poderoso e gratuito. O prazer de tomar um café e ter o controle total de suas contas.";
 const CONF_SITE_LANG = "pt-BR";
 const CONF_SITE_DOMAIN = "wwww.freddev.com";
 
@@ -58,6 +60,7 @@ const CONF_MESSAGE_ERROR = "error";
 /**
  * VIEW
  */
+//const CONF_VIEW_PATH = __DIR__ . "/../../cafecontrol";
 const CONF_VIEW_PATH = __DIR__ . "/../../shared/views";
 const CONF_VIEW_EXT = "php";
 const CONF_VIEW_THEME = "cafecontrol";

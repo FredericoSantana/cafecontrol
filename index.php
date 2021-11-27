@@ -24,7 +24,7 @@ $route->get("/sobre", "Web:about");
 /**
  * ERROR ROUTES
  */
-$route->namespace("Source\App")->group("/erro");
+$route->namespace("Source\App")->group("/ops");
 $route->get("/{errcode}", "Web:error");
 
 /**
@@ -36,8 +36,8 @@ $route->dispatch();
  * ERROR REDIRECT
  */
 if ($route->error()) {
-  $route->redirect("/erro/{$route->error()}");
+  $route->redirect("/ops/{$route->error()}");
 }
 
-//termina o output - termina o cache
+//termina o output - conclui/desarmazena o cache
 ob_end_flush();
