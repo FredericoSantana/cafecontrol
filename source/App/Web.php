@@ -99,7 +99,11 @@ class Web extends Controller
     ]);
   }
 
-  public function login()
+
+  /**
+   * SITE LOGIN
+   */
+  public function login(): void
   {
     $head = $this->seo->render(
       "Entrar - " . CONF_SITE_NAME,
@@ -113,7 +117,11 @@ class Web extends Controller
     ]);
   }
 
-  public function forget()
+
+  /**
+   * SITE FORGET
+   */
+  public function forget(): void
   {
     $head = $this->seo->render(
       "Recuperar Senha - " . CONF_SITE_NAME,
@@ -127,7 +135,11 @@ class Web extends Controller
     ]);
   }
 
-  public function register()
+
+  /**
+   * SITE REGISTER
+   */
+  public function register(): void
   {
     $head = $this->seo->render(
       "Criar Conta - " . CONF_SITE_NAME,
@@ -137,6 +149,40 @@ class Web extends Controller
     );
 
     echo $this->view->render("auth-register", [
+      "head" => $head
+    ]);
+  }
+
+  /**
+   * SITE OPT-IN CONFIRM
+   */
+  public function confirm(): void
+  {
+    $head = $this->seo->render(
+      "Confirme seu cadastro - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url("/confirma"),
+      theme("/assets/images/share.jpg")
+    );
+
+    echo $this->view->render("optin-confirm", [
+      "head" => $head
+    ]);
+  }
+
+  /**
+   * SITE OPT-IN SUCCESS
+   */
+  public function success()
+  {
+    $head = $this->seo->render(
+      "Bem-vindo(a) ao - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url("/obrigado"),
+      theme("/assets/images/share.jpg")
+    );
+
+    echo $this->view->render("optin-success", [
       "head" => $head
     ]);
   }
