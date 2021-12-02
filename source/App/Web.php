@@ -29,10 +29,19 @@ class Web extends Controller
       url(),
       url("/assets/images/share.jpg")
     );
+    
     echo $this->view->render("home", [
       "head" => $head,
       "video" => "lDZGl9Wdc7Y"
     ]);
+  }
+
+  /**
+   * ABOUT
+   */
+  public function about()
+  {
+
   }
 
   /**

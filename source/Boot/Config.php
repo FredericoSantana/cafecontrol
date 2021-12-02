@@ -10,8 +10,8 @@ const CONF_DB_NAME = "mvcoo";
 /**
  * PROJECT URLs
  */
-const CONF_URL_BASE = "https://www.cafecontrol.com";
-const CONF_URL_TEST = "https://www.localhost/cafecontrol";
+//const CONF_URL_BASE = "https://www.cafecontrol.com";
+const CONF_URL_BASE = "http://www.localhost/cafecontrol";
 const CONF_URL_ADMIN = "/admin";
 
 /**
@@ -60,8 +60,8 @@ const CONF_MESSAGE_ERROR = "error";
 /**
  * VIEW
  */
-//const CONF_VIEW_PATH = __DIR__ . "/../../cafecontrol";
-const CONF_VIEW_PATH = __DIR__ . "/../../shared/views";
+const CONF_VIEW_PATH = __DIR__ . "/../../themes";
+//const CONF_VIEW_PATH = __DIR__ . "/../../shared/views";
 const CONF_VIEW_EXT = "php";
 const CONF_VIEW_THEME = "cafecontrol";
 
