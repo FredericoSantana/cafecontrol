@@ -91,6 +91,7 @@ const CONF_MAIL_SENDER = [
   "name" => "Frederico Santana",
   "address" => "fredericosantana11@gmail.com"
 ];
+const CONF_MAIL_SUPPORT = "fredericosantana11@gmail.com";
 const CONF_MAIL_OPTIONS_LANG = "br";
 const CONF_MAIL_OPTIONS_HTML = "true";
 const CONF_MAIL_OPTIONS_AUTH = "true";

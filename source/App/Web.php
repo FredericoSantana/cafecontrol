@@ -2,8 +2,10 @@
 
 namespace Source\App;
 
+use Source\Core\Connect;
 use Source\Core\Controller;
-use CoffeeCode\Paginator\Paginator;
+use Source\Support\Pager;
+
 
 /**
  * Class Web
@@ -69,7 +71,7 @@ class Web extends Controller
       theme("/assets/images/share.jpg")
     );
 
-    $pager = new Paginator(url("blog/page/"));
+    $pager = new Pager(url("blog/page/"));
     $pager->pager(100, 10, ($data['page'] ?? 1));
 
     echo $this->view->render("blog", [
@@ -209,16 +211,39 @@ class Web extends Controller
   public function error(array $data): void
   {
     $error = new \stdClass();
-    $error->code = $data['errcode'];
-    $error->title = "Ooops. Conteúdo indisponível :/";
-    $error->message = "Sentimos muito, mas o conteúdo que você tentou acessar não existe, está indisponível no momento ou foi removido :/";
-    $error->linkTitle = "Continue navegando!";
-    $error->link = url_back();
+
+    switch ($data['errcode']) {
+      case "problemas":
+        $error->code = "OPS";
+        $error->title = "Estamos enfrentando problemas!";
+        $error->message = "Sentimos muito, mas o conteúdo que você tentou acessar não existe, está indisponível no momento ou foi removido :/";
+        $error->linkTitle = "ENVIAR E-MAIL";
+        $error->link = "mailto:" . CONF_MAIL_SUPPORT;
+        break;
+
+      case "manutencao":
+        $error->code = "OPS";
+        $error->title = "Desculpe. Estamos em manutenção!";
+        $error->message = "Voltamos logo! Por hora estamos trabalhando para melhorar nosso conteúdo para você controlar melhor as suas contas :P";
+        $error->linkTitle = null;
+        $error->link = null;
+        break;
+
+      default:
+        $error->code = $data['errcode'];
+        $error->title = "Ooops. Conteúdo indispinível :/";
+        $error->message = "Sentimos muito, mas o conteúdo que você tentou acessar não existe, está indisponível no momento ou foi removido :/";
+        $error->linkTitle = "Continue navegando!";
+        $error->link = url_back();
+        break;
+    }
+
+
 
     $head = $this->seo->render(
       "{$error->code} | {$error->title}",
       "$error->message",
-      url_back("/ops/{$error->code}"),
+      url("/ops/{$error->code}"),
       theme("/assets/images/share.jpg"),
       false
     );
