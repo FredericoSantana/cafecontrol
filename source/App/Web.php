@@ -55,8 +55,10 @@ class Web extends Controller
     ]);
   }
 
+
   /**
-   * BLOG
+   * SITE BLOG
+   * @param array|null $data
    */
   public function blog(?array $data): void
   {
@@ -76,6 +78,10 @@ class Web extends Controller
     ]);
   }
 
+  /**
+   * SITE BLOG POST
+   * @param array $data
+   */
   public function blogPost(array $data): void
   {
     $postName = $data['postName'];
@@ -91,7 +97,48 @@ class Web extends Controller
       "head" => $head,
       "data" => $this->seo->data()
     ]);
+  }
 
+  public function login()
+  {
+    $head = $this->seo->render(
+      "Entrar - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url("/entrar"),
+      theme("/assets/images/share.jpg")
+    );
+
+    echo $this->view->render("auth-login", [
+      "head" => $head
+    ]);
+  }
+
+  public function forget()
+  {
+    $head = $this->seo->render(
+      "Recuperar Senha - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url("/recuperar"),
+      theme("/assets/images/share.jpg")
+    );
+
+    echo $this->view->render("auth-forget", [
+      "head" => $head
+    ]);
+  }
+
+  public function register()
+  {
+    $head = $this->seo->render(
+      "Criar Conta - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url("/cadastrar"),
+      theme("/assets/images/share.jpg")
+    );
+
+    echo $this->view->render("auth-register", [
+      "head" => $head
+    ]);
   }
 
   /**
