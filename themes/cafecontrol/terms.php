@@ -1,4 +1,4 @@
-<?php $this->layout("_theme"); ?>
+<?php $this->layout("_theme", ["head" => $head]); ?>
 
 <article class="terms_page">
     <header class="terms_page_header">
