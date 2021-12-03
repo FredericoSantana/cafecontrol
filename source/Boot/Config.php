@@ -63,7 +63,7 @@ const CONF_MESSAGE_ERROR = "error";
 const CONF_VIEW_PATH = __DIR__ . "/../../themes";
 //const CONF_VIEW_PATH = __DIR__ . "/../../shared/views";
 const CONF_VIEW_EXT = "php";
-const CONF_VIEW_THEME = "cafecontrol";
+const CONF_VIEW_THEME = "cafeweb";
 
 /**
  * UPLOAD

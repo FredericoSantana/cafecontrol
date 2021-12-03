@@ -101,12 +101,6 @@
 .icon-check:before {
   content: "\77";
 }
-.icon-exclamation:before {
-  content: "\75";
-}
-.icon-info:before {
-  content: "\76";
-}
 .icon-graduation-cap:before {
   content: "\78";
 }
@@ -133,4 +127,10 @@
 }
 .icon-user-plus:before {
   content: "\46";
+}
+.icon-warning:before {
+  content: "\47";
+}
+.icon-info:before {
+  content: "\48";
 }
