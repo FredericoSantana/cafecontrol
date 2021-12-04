@@ -60,6 +60,7 @@
     </aside>
 </section>
 
+<?php if(!empty($faq)): ?>
 <section class="faq">
     <div class="faq_content content container">
         <header class="faq_header">
@@ -69,17 +70,13 @@
             <p>Confira as principais dúvidas e repostas sobre o CaféControl.</p>
         </header>
         <div class="faq_asks">
-            <?php for ($i = 0; $i < 6; $i++): ?>
+            <?php foreach ($faq as $question): ?>
                 <article class="faq_ask j_collapse">
-                    <h4 class="j_collapse_icon icon-plus">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                        Deserunt, soluta.</h4>
-                    <div class="faq_ask_coll j_collapse_box">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aperiam in pariatur
-                            quaerat, qui saepe tenetur ut vero vitae.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, repudiandae.</p>
-                    </div>
+                    <h4 class="j_collapse_icon icon-plus"><?= $question->question; ?></h4>
+                    <div class="faq_ask_coll j_collapse_box"><?= $question->response; ?></div>
                 </article>
-            <?php endfor; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+<?php endif; ?>
