@@ -81,11 +81,14 @@ class Web extends Controller
       theme("/assets/images/share.jpg")
     );
 
+    $blog = (new Post())->find();
+
     $pager = new Pager(url("blog/page/"));
-    $pager->pager(100, 10, ($data['page'] ?? 1));
+    $pager->pager($blog->count(), 9, ($data['page'] ?? 1));
 
     echo $this->view->render("blog", [
       "head" => $head,
+      "blog" => $blog->limit($pager->limit())->offset($pager->offset())->fetch(true),
       "paginator" => $pager->render()
     ]);
   }
