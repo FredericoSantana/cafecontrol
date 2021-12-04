@@ -23,11 +23,15 @@ $route->get("/sobre", "Web:about");
 
 
 //Blog
-$route->get("/blog", "Web:blog");
-$route->get("/blog/page/{page}", "Web:blog");
-$route->get("/blog/{postName}", "Web:blogPost");
+$route->group("/blog");
+$route->get("/", "Web:blog");
+$route->get("/p/{page}", "Web:blog");
+$route->get("/{uri}", "Web:blogPost");
+$route->post("/buscar", "Web:blogSearch");
+$route->post("/buscar/{terms}/{page}", "Web:blogSearch");
 
 //Auth
+$route->group(null);
 $route->get("/entrar", "Web:login");
 $route->get("/recuperar", "Web:forget");
 $route->get("/cadastrar", "Web:register");

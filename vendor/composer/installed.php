@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '6b0ea531194ac99aee9f348f53d004b78b70b6b5',
+        'reference' => '66e5eee910be4c74444086f6bb6679edb3de5661',
         'name' => 'fredericosantana/cafecontrol',
         'dev' => true,
     ),
@@ -61,7 +61,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '6b0ea531194ac99aee9f348f53d004b78b70b6b5',
+            'reference' => '66e5eee910be4c74444086f6bb6679edb3de5661',
             'dev_requirement' => false,
         ),
         'league/plates' => array(

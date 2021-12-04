@@ -21,11 +21,11 @@ function is_email(string $email): bool
  */
 function is_passwd(string $password): bool
 {
-  if (password_get_info($password)['algo']) {
+  if (password_get_info($password)['algo'] || (mb_strlen($password) >= CONF_PASSWD_MIN_LEN && mb_strlen($password) <= CONF_PASSWD_MAX_LEN)) {
     return true;
   }
 
-  return (mb_strlen($password) >= CONF_PASSWD_MIN_LEN && mb_strlen($password) <= CONF_PASSWD_MAX_LEN ? true : false);
+  return false;
 }
 
 /**
@@ -121,11 +121,13 @@ function str_limit_chars(string $string, int $limit, string $pointer = "..."): s
   return "{$chars}{$pointer}";
 }
 
+
 /**
  * ###############
  * ###   URL   ###
  * ###############
  */
+
 
 /**
  * @param string|null $path
@@ -156,6 +158,32 @@ function url_back(): string
 }
 
 /**
+ * @param string $url
+ */
+function redirect(string $url): void
+{
+  header("HTTP/1.1 302 Redirect");
+  if (filter_var($url, FILTER_VALIDATE_URL)) {
+    header("Location: {$url}");
+    exit;
+  }
+
+  if (filter_input(INPUT_GET, "route", FILTER_DEFAULT) != $url) {
+    $location = url($url);
+    header("Location: {$location}");
+    exit;
+  }
+}
+
+
+/**
+ * ##################
+ * ###   ASSETS   ###
+ * ##################
+ */
+
+
+/**
  * @param string|null $path
  * @return string
  */
@@ -175,23 +203,15 @@ function theme(string $path = null): string
   return CONF_URL_BASE . "/themes/" . CONF_VIEW_THEME;
 }
 
-
 /**
- * @param string $url
+ * @param string $image
+ * @param int $width
+ * @param int|null $height
+ * @return string
  */
-function redirect(string $url): void
+function image(string $image, int $width, int $height = null): string
 {
-  header("HTTP/1.1 302 Redirect");
-  if (filter_var($url, FILTER_VALIDATE_URL)) {
-    header("Location: {$url}");
-    exit;
-  }
-
-  if (filter_input(INPUT_GET, "route", FILTER_DEFAULT) != $url) {
-    $location = url($url);
-    header("Location: {$location}");
-    exit;
-  }
+  return url() . "/" . (new \Source\Support\Thumb())->make($image, $width, $height);
 }
 
 /**
@@ -240,6 +260,9 @@ function date_fmt_app(string $date = "now"): string
  */
 function passwd(string $password): string
 {
+  if (!empty(password_get_info($password)['algo'])) {
+    return $password;
+  }
   return password_hash($password, CONF_PASSWD_ALGO, CONF_PASSWD_OPTION);
 }
 
@@ -263,9 +286,9 @@ function passwd_rehash(string $hash): bool
 }
 
 /**
- * ################
- * ###   CSRF   ###
- * ################
+ * ###################
+ * ###   REQUEST   ###
+ * ###################
  */
 
 /**
@@ -289,4 +312,17 @@ function csrf_verify($request): bool
     return false;
   }
   return true;
+}
+
+/**
+ * @return string|null
+ */
+function flash(): ?string
+{
+  $session = new \Source\Core\Session();
+  if ($flash = $session->flash()) {
+    echo $flash;
+  }
+
+  return null;
 }
