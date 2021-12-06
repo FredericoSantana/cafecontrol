@@ -33,9 +33,9 @@
   <?php else: ?>
     <div class="blog_content container content">
       <div class="blog_articles">
-        <?php for ($i = 0; $i <= 8; $i++): ?>
-          <?php $this->insert("blog-list"); ?>
-        <?php endfor; ?>
+        <?php foreach($blog as $post): ?>
+          <?php $this->insert("blog-list", ["post" => $post]); ?>
+        <?php endforeach; ?>
       </div>
       <?= $paginator; ?>
     </div>
