@@ -6,7 +6,7 @@
     <p><?= ($search ?? "Confira nossas dicas para controlar melhor suas contas"); ?></p>
     <form name="search" action="<?= url("/blog/buscar"); ?>" method="post" enctype="multipart/form-data">
       <label>
-        <input type="text" name="s" placeholder="Encontre um artigo:"/>
+        <input type="text" name="s" placeholder="Encontre um artigo:" required/>
         <button class="icon-search icon-notext"></button>
       </label>
     </form>
