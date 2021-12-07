@@ -23,6 +23,29 @@ class Auth extends Model
   }
 
   /**
+   * @return User|null
+   */
+  public static function user(): ?User
+  {
+    $session = new Session();
+
+    if (!$session->has("authUser")) {
+      return null;
+    }
+
+    return (new User())->findById($session->authUser);
+  }
+
+  /**
+   * log-out
+   */
+  public static function logout(): void
+  {
+    $session = new Session();
+    $session->unset("authUser");
+  }
+
+  /**
    * @param User $user
    * @return bool
    */

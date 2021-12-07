@@ -69,6 +69,7 @@ const CONF_MESSAGE_ERROR = "error icon-warning";
 const CONF_VIEW_PATH = __DIR__ . "/../../themes";
 const CONF_VIEW_EXT = "php";
 const CONF_VIEW_THEME = "cafeweb";
+const CONF_VIEW_APP = "cafeapp";
 
 /**
  * UPLOAD

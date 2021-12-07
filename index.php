@@ -46,6 +46,13 @@ $route->get("/obrigado/{email}", "Web:success");
 $route->get("/termos", "Web:terms");
 
 /**
+ * APP
+ */
+$route->group("/app");
+$route->get("/", "App:home");
+$route->get("/sair", "App:logout");
+
+/**
  * ERROR ROUTES
  */
 $route->namespace("Source\App")->group("/ops");
