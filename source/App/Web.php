@@ -277,16 +277,30 @@ class Web extends Controller
       theme("/assets/images/share.jpg")
     );
 
-    echo $this->view->render("optin-confirm", [
-      "head" => $head
+    echo $this->view->render("optin", [
+      "head" => $head,
+      "data" => (object)[
+        "title" => "Falta pouco! Confirme seu cadastro.",
+        "desc" => "Enviamos um link de confirmação para seu e-mail. Acesse e siga as instruções para concluir seu cadastro e comece a controlar com o CaféControl",
+        "image" => theme("/assets/images/optin-confirm.jpg")
+      ]
     ]);
   }
 
   /**
    * SITE OPT-IN SUCCESS
+   * @param array $data
    */
-  public function success()
+  public function success(array $data): void
   {
+    $email = base64_decode($data["email"]);
+    $user = (new User())->findByEmail($email);
+
+    if ($user && $user->status != "confirmed") {
+      $user->status = "confirmed";
+      $user->save();
+    }
+
     $head = $this->seo->render(
       "Bem-vindo(a) ao - " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -294,8 +308,15 @@ class Web extends Controller
       theme("/assets/images/share.jpg")
     );
 
-    echo $this->view->render("optin-success", [
-      "head" => $head
+    echo $this->view->render("optin", [
+      "head" => $head,
+      "data" => (object)[
+        "title" => "Tudo pronto. Você já pode controlar :)",
+        "desc" => "Bem-vindo(a) ao seu controle de contas, vamos tomar um café?",
+        "image" => theme("/assets/images/optin-success.jpg"),
+        "link" => url("/entrar"),
+        "linkTitle" => "Fazer Login"
+      ]
     ]);
   }
 
