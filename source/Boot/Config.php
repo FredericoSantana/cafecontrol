@@ -10,8 +10,7 @@ const CONF_DB_NAME = "mvcoo";
 /**
  * PROJECT URLs
  */
-//const CONF_URL_BASE = "https://www.cafecontrol.com";
-const CONF_URL_BASE = "http://www.localhost/cafecontrol";
+const CONF_URL_BASE = "https://www.localhost/cafecontrol";
 const CONF_URL_ADMIN = "/admin";
 
 /**
@@ -57,7 +56,7 @@ const CONF_PASSWD_OPTION = ['cost' => 10];
 /**
  * MESSAGE
  */
-const CONF_MESSAGE_CLASS = "trigger";
+const CONF_MESSAGE_CLASS = "message";
 const CONF_MESSAGE_INFO = "info icon-info";
 const CONF_MESSAGE_SUCCESS = "success icon-check-square-o";
 const CONF_MESSAGE_WARNING = "warning icon-warning";
