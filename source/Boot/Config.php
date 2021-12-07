@@ -4,7 +4,7 @@
  */
 const CONF_DB_HOST = "localhost";
 const CONF_DB_USER = "root";
-const CONF_DB_PASS = "";
+const CONF_DB_PASS = "root";
 const CONF_DB_NAME = "mvcoo";
 
 /**
@@ -91,14 +91,14 @@ const CONF_IMAGE_QUALITY = ["jpg" => 75, "png" => 5];
 const CONF_MAIL_HOST = "smtp.gmail.com";
 const CONF_MAIL_PORT = "587";
 const CONF_MAIL_USER = "fredericosantana11@gmail.com";
-const CONF_MAIL_PASS = "engels967947";
+const CONF_MAIL_PASS = "Engels%967947!";
 const CONF_MAIL_SENDER = [
   "name" => "Frederico Santana",
   "address" => "fredericosantana11@gmail.com"
 ];
 const CONF_MAIL_SUPPORT = "fredericosantana11@gmail.com";
-const CONF_MAIL_OPTIONS_LANG = "br";
-const CONF_MAIL_OPTIONS_HTML = "true";
-const CONF_MAIL_OPTIONS_AUTH = "true";
-const CONF_MAIL_OPTIONS_SECURE = "tls";
-const CONF_MAIL_OPTIONS_CHARSET = "utf-8";
+const CONF_MAIL_OPTION_LANG = "br";
+const CONF_MAIL_OPTION_HTML = "true";
+const CONF_MAIL_OPTION_AUTH = "true";
+const CONF_MAIL_OPTION_SECURE = "tls";
+const CONF_MAIL_OPTION_CHARSET = "utf-8";
