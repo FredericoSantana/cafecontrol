@@ -5,7 +5,6 @@ if (strpos(url(), "localhost")) {
      */
     $minCSS = new MatthiasMullie\Minify\CSS();
     $minCSS->add(__DIR__ . "/../../shared/styles/styles.css");
-//    $minCSS->add(__DIR__ . "/../../shared/styles/style.css");
     $minCSS->add(__DIR__ . "/../../shared/styles/boot.css");
 
     //theme CSS

@@ -22,6 +22,12 @@ const CONF_SITE_TITLE = "Gerencie suas contas com o melhor café.";
 const CONF_SITE_DESC = "O CafeControl é um gerenciador de contas simples, poderoso e gratuito. O prazer de tomar um café e ter o controle total de suas contas.";
 const CONF_SITE_LANG = "pt-BR";
 const CONF_SITE_DOMAIN = "wwww.freddev.com";
+const CONF_SITE_ADDR_STREET = "Rua Barão do Rio Branco";
+const CONF_SITE_ADDR_NUMBER = "800";
+const CONF_SITE_ADDR_COMPLEMENT = "Casa 06";
+const CONF_SITE_ADDR_CITY = "Goiânia";
+const CONF_SITE_ADDR_STATE = "Goiás";
+const CONF_SITE_ADDR_ZIPCODE = "74340-040";
 
 /**
  * SOCIAL
