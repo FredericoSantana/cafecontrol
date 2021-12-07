@@ -4,7 +4,7 @@
  */
 const CONF_DB_HOST = "localhost";
 const CONF_DB_USER = "root";
-const CONF_DB_PASS = "root";
+const CONF_DB_PASS = "";
 const CONF_DB_NAME = "mvcoo";
 
 /**
@@ -61,7 +61,6 @@ const CONF_MESSAGE_ERROR = "error icon-warning";
  * VIEW
  */
 const CONF_VIEW_PATH = __DIR__ . "/../../themes";
-//const CONF_VIEW_PATH = __DIR__ . "/../../shared/views";
 const CONF_VIEW_EXT = "php";
 const CONF_VIEW_THEME = "cafeweb";
 
