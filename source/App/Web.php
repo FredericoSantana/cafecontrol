@@ -180,9 +180,38 @@ class Web extends Controller
 
   /**
    * SITE LOGIN
+   * @param null|array $data
    */
-  public function login(): void
+  public function login(?array $data): void
   {
+    if (!empty($data['csrf'])) {
+      if (!csrf_verify($data)) {
+        $json['message'] = $this->message->error("Erro ao enviar, favor use o formulário")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      if (empty($data['email']) || empty($data['password'])) {
+        $json['message'] = $this->message->warning("Informe seu e-mail e senha para entrar")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $save = !empty($data['save']);
+      $auth = new Auth();
+      $login = $auth->login($data['email'], $data['password'], $save);
+
+      if ($login) {
+        $json['redirect'] = url("/app");
+      }else{
+        $json['message'] = $auth->message()->render();
+      }
+
+      echo json_encode($json);
+
+      return;
+    }
+
     $head = $this->seo->render(
       "Entrar - " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -191,7 +220,8 @@ class Web extends Controller
     );
 
     echo $this->view->render("auth-login", [
-      "head" => $head
+      "head" => $head,
+      "cookie" => filter_input(INPUT_COOKIE, "authEmail")
     ]);
   }
 
