@@ -115,3 +115,9 @@ modules.xml
 
 # Arquivo de conexão
 env.ini
+
+# Arquivos minificados
+.themes/cafeweb/assets/style.css
+.themes/cafeweb/assets/script.js
+.themes/cafeapp/assets/style.css
+.themes/cafeapp/assets/script.js
