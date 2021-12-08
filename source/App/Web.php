@@ -24,15 +24,6 @@ class Web extends Controller
   public function __construct()
   {
     parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_THEME . "/");
-
-//    $email = new Email();
-//    $email->bootstrap(
-//      "Teste de fila de email " . time(),
-//      "Este é apenas um teste de envio de email",
-//      "fredericosantana11@gmail.com",
-//      "Frederico Santana"
-//    )->sendQueue();
-
   }
 
   /**
@@ -253,7 +244,7 @@ class Web extends Controller
       if ($login) {
         $json['redirect'] = url("/app");
       } else {
-        $json['message'] = $auth->message()->render();
+        $json['message'] = $auth->message()->before("Ooops! ")->render();
       }
 
       echo json_encode($json);
@@ -298,7 +289,7 @@ class Web extends Controller
       if ($auth->forget($data['email'])) {
         $json['message'] = $this->message->success("Acesse seu e-mail para recuperar a senha")->render();
       } else {
-        $json['message'] = $auth->message()->render();
+        $json['message'] = $auth->message()->before("Ooops! ")->render();
 
       }
 
@@ -344,7 +335,7 @@ class Web extends Controller
         $this->message->success("Senha alterada com sucesso")->flash();
         $json['redirect'] = url("/entrar");
       }else{
-        $json['message'] = $auth->message()->render();
+        $json['message'] = $auth->message()->before("Ooops! ")->render();
       }
 
       echo json_encode($json);
@@ -396,7 +387,7 @@ class Web extends Controller
         $json['redirect'] = url("/confirma");
 
       } else {
-        $json['message'] = $auth->message()->render();
+        $json['message'] = $auth->message()->before("Ooops! ")->render();
       }
 
       echo json_encode($json);

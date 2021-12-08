@@ -54,15 +54,6 @@ const CONF_PASSWD_ALGO = PASSWORD_DEFAULT;
 const CONF_PASSWD_OPTION = ['cost' => 10];
 
 /**
- * MESSAGE
- */
-const CONF_MESSAGE_CLASS = "message";
-const CONF_MESSAGE_INFO = "info icon-info";
-const CONF_MESSAGE_SUCCESS = "success icon-check-square-o";
-const CONF_MESSAGE_WARNING = "warning icon-warning";
-const CONF_MESSAGE_ERROR = "error icon-warning";
-
-/**
  * VIEW
  */
 const CONF_VIEW_PATH = __DIR__ . "/../../themes";
