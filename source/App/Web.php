@@ -228,6 +228,10 @@ class Web extends Controller
    */
   public function login(?array $data): void
   {
+    if (Auth::user()) {
+      redirect("/app");
+    }
+
     if (!empty($data['csrf'])) {
       if (!csrf_verify($data)) {
         $json['message'] = $this->message->error("Erro ao enviar, favor use o formulário")->render();
@@ -282,6 +286,10 @@ class Web extends Controller
    */
   public function forget(?array $data): void
   {
+    if (Auth::user()) {
+      redirect("/app");
+    }
+
     if (!empty($data['csrf'])) {
       if (!csrf_verify($data)) {
         $json['message'] = $this->message->error("Erro ao enviar, favor use o formulário")->render();
@@ -330,6 +338,10 @@ class Web extends Controller
    */
   public function reset(array $data): void
   {
+    if (Auth::user()) {
+      redirect("/app");
+    }
+
     if (!empty($data['csrf'])) {
       if (!csrf_verify($data)) {
         $json['message'] = $this->message->error("Erro ao enviar, favor use o formulário")->render();
