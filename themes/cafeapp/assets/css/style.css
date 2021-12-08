@@ -65,7 +65,7 @@ body {
 }
 
 .app_form .label_group label {
-    flex-basis: calc(50% - calc(var(--area-normal) / 2));
+    flex-basis: calc(50% - var(--area-small));
 }
 
 .app_form .label_group label:first-child {
@@ -141,18 +141,25 @@ body {
     display: inline-block;
     width: auto;
     padding: 15px 30px;
+    margin: 0 var(--area-small);
 }
 
+.btn_back,
 .btn_remove {
     cursor: pointer;
     font-weight: bold;
     color: var(--color-red);
     opacity: 0.5;
-    margin-right: var(--area-normal);
+    text-decoration: none;
 }
 
+.btn_back:hover,
 .btn_remove:hover {
     opacity: 1;
+}
+
+.btn_back {
+    color: var(--color-blue);
 }
 
 
@@ -396,6 +403,11 @@ body {
     overflow-y: auto;
 }
 
+.app_modal .message {
+    text-align: center;
+    margin-bottom: var(--area-normal);
+}
+
 .app_modal_box {
     display: none;
     margin: auto;
@@ -495,7 +507,7 @@ body {
     padding: 10px;
     font-size: var(--font-small);
     border: 1px solid #cccccc;
-    flex-basis: calc(50% - calc(var(--area-normal) / 2));
+    flex-basis: calc(50% - var(--area-small));
     cursor: pointer;
 }
 
@@ -722,6 +734,7 @@ body {
 }
 
 .app_launch_item.footer {
+    justify-content: center;
     background: none;
     font-size: var(--font-normal);
     color: #888888;
@@ -729,10 +742,14 @@ body {
 }
 
 .app_launch_item p {
-    flex-basis: 17.5%;
+    flex: 0 0 17.5%;
     margin: 0;
     padding: 0 20px;
     text-align: center;
+}
+
+.app_launch_item.footer p {
+    flex-basis: 50%;
 }
 
 .app_launch_item p.desc {
@@ -762,12 +779,36 @@ body {
 }
 
 /*INVOICE*/
-.app_invoice {
+.app_formbox {
     padding: var(--area-box);
 }
 
-.app_invoice .field {
+.app_formbox .field {
     margin-bottom: 15px;
+}
+
+.app_formbox_actions {
+    margin-top: var(--area-normal);
+}
+
+.app_formbox_photo {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--area-box);
+}
+
+.app_formbox_photo .thumb {
+    width: 120px;
+    height: 120px;
+    border: 5px solid #CCCCCC;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.app_formbox_photo div {
+    width: calc(100% - 120px);
+    padding-left: var(--area-box);
 }
 
 
@@ -854,6 +895,19 @@ body {
         text-align: center;
         margin-bottom: var(--area-box);
     }
+
+    .app_launch_item .enrollment,
+    .app_launch_item .date {
+        display: none;
+    }
+
+    .app_launch_item p {
+        flex-basis: 45%;
+    }
+
+    .app_launch_item p.desc {
+        flex-basis: 55%;
+    }
 }
 
 @media (max-width: 42em) {
@@ -870,17 +924,13 @@ body {
         padding: 30px;
     }
 
-    .app_launch_item .enrollment,
-    .app_launch_item .date {
-        display: none;
+    .app_formbox_photo .thumb {
+        width: 80px;
+        height: 80px;
     }
 
-    .app_launch_item p {
-        flex-basis: 45%;
-    }
-
-    .app_launch_item p.desc {
-        flex-basis: 55%;
+    .app_formbox_photo div {
+        width: calc(100% - 80px);
     }
 }
 

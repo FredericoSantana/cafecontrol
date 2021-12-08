@@ -14,6 +14,10 @@
     border-radius: var(--radius-normal);
 }
 
+form .message{
+    text-align: center;
+}
+
 .message.success {
     color: var(--color-green);
     border-color: var(--color-green);

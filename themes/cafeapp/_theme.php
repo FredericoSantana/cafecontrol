@@ -11,6 +11,13 @@
 </head>
 <body>
 
+<div class="ajax_load">
+    <div class="ajax_load_box">
+        <div class="ajax_load_box_circle"></div>
+        <p class="ajax_load_box_title">Aguarde, carregando...</p>
+    </div>
+</div>
+
 <div class="app">
     <header class="app_header">
         <h1><a class="icon-coffee transition" href="<?= url("/app"); ?>" title="CaféApp">CaféApp</a></h1>
@@ -27,9 +34,14 @@
 
             <div class="app_sidebar_user app_widget_title">
                 <span class="user">
-                    <img class="rounded" alt="Robson" title="Robson"
-                         src="<?= theme("/assets/images/avatar.jpg", CONF_VIEW_APP); ?>"/>
-                    <span>Robson</span>
+                    <?php if (user()->photo()): ?>
+                        <img class="rounded" alt="Robson" title="Robson"
+                             src="<?= image(user()->photo, 260, 260); ?>"/>
+                    <?php else: ?>
+                        <img class="rounded" alt="Robson" title="Robson"
+                             src="<?= theme("/assets/images/avatar.jpg", CONF_VIEW_APP); ?>"/>
+                    <?php endif; ?>
+                    <span><?= user()->first_name; ?></span>
                 </span>
                 <span class="plan radius">Free</span>
             </div>
@@ -38,6 +50,7 @@
         </nav>
 
         <main class="app_main">
+            <?= flash(); ?>
             <?= $this->section("content"); ?>
         </main>
     </div>
@@ -48,6 +61,7 @@
             &copy; UpInside - Todos os direitos reservados
         </span>
     </footer>
+
     <?= $this->insert("views/modals"); ?>
 </div>
 
