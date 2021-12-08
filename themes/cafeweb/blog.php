@@ -3,7 +3,7 @@
 <section class="blog_page">
   <header class="blog_page_header">
     <h1><?= ($title ?? "BLOG"); ?></h1>
-    <p><?= ($search ?? "Confira nossas dicas para controlar melhor suas contas"); ?></p>
+    <p><?= ($search ?? $desc ?? "Confira nossas dicas para controlar melhor suas contas"); ?></p>
     <form name="search" action="<?= url("/blog/buscar"); ?>" method="post" enctype="multipart/form-data">
       <label>
         <input type="text" name="s" placeholder="Encontre um artigo:" required/>
