@@ -4,6 +4,7 @@ namespace Source\App;
 
 use Source\Core\Controller;
 use Source\Models\Auth;
+use Source\Models\CafeApp\AppInvoice;
 use Source\Models\Report\Access;
 use Source\Models\Report\Online;
 use Source\Models\User;
@@ -15,123 +16,145 @@ use Source\Support\Message;
  */
 class App extends Controller
 {
-    /** @var User */
-    private $user;
+  /** @var User */
+  private $user;
 
-    /**
-     * App constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_APP . "/");
+  /**
+   * App constructor.
+   */
+  public function __construct()
+  {
+    parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_APP . "/");
 
-        if (!$this->user = Auth::user()) {
-            $this->message->warning("Efetue login para acessar o APP.")->flash();
-            redirect("/entrar");
-        }
-
-        (new Access())->report();
-        (new Online())->report();
+    if (!$this->user = Auth::user()) {
+      $this->message->warning("Efetue login para acessar o APP.")->flash();
+      redirect("/entrar");
     }
 
-    /**
-     * APP HOME
-     */
-    public function home()
-    {
-        $head = $this->seo->render(
-            "Olá {$this->user->first_name}. Vamos controlar? - " . CONF_SITE_NAME,
-            CONF_SITE_DESC,
-            url(),
-            theme("/assets/images/share.jpg"),
-            false
-        );
+    (new Access())->report();
+    (new Online())->report();
+  }
 
-        echo $this->view->render("home", [
-            "head" => $head
-        ]);
+  /**
+   * APP HOME
+   */
+  public function home()
+  {
+    $head = $this->seo->render(
+      "Olá {$this->user->first_name}. Vamos controlar? - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
+
+    //CHART
+
+    $dateChart = [];
+    for ($month = -4; $month <= 0; $month++) {
+      $dateChart[] = date("m/Y", strtotime("{$month}month"));
     }
 
-    /**
-     * APP INCOME (Receber)
-     */
-    public function income()
-    {
-        $head = $this->seo->render(
-            "Minhas receitas - " . CONF_SITE_NAME,
-            CONF_SITE_DESC,
-            url(),
-            theme("/assets/images/share.jpg"),
-            false
-        );
+    $chartData = new \stdClass();
+    $chartData->categories = "'" . implode("','", $dateChart) . "'";
+    $chartData->expense = "0,0,0,0,0";
+    $chartData->income = "0,0,0,0,0";
 
-        echo $this->view->render("income", [
-            "head" => $head
-        ]);
-    }
+    $chart = (new AppInvoice())
+      ->find("user_id = :user","user={$this->user->id}")
+      ->limit(5)
+      ->fetch(true);
 
-    /**
-     * APP EXPENSE (Pagar)
-     */
-    public function expense()
-    {
-        $head = $this->seo->render(
-            "Minhas despesas - " . CONF_SITE_NAME,
-            CONF_SITE_DESC,
-            url(),
-            theme("/assets/images/share.jpg"),
-            false
-        );
+    var_dump($chart);
 
-        echo $this->view->render("expense", [
-            "head" => $head
-        ]);
-    }
+    //END CHART
 
-    /**
-     * APP INVOICE (Fatura)
-     */
-    public function invoice()
-    {
-        $head = $this->seo->render(
-            "Aluguel - " . CONF_SITE_NAME,
-            CONF_SITE_DESC,
-            url(),
-            theme("/assets/images/share.jpg"),
-            false
-        );
+    echo $this->view->render("home", [
+      "head" => $head,
+      "chart" => $chartData
+    ]);
+  }
 
-        echo $this->view->render("invoice", [
-            "head" => $head
-        ]);
-    }
+  /**
+   * APP INCOME (Receber)
+   */
+  public function income()
+  {
+    $head = $this->seo->render(
+      "Minhas receitas - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
 
-    /**
-     * APP PROFILE (Perfil)
-     */
-    public function profile()
-    {
-        $head = $this->seo->render(
-            "Meu perfil - " . CONF_SITE_NAME,
-            CONF_SITE_DESC,
-            url(),
-            theme("/assets/images/share.jpg"),
-            false
-        );
+    echo $this->view->render("income", [
+      "head" => $head
+    ]);
+  }
 
-        echo $this->view->render("profile", [
-            "head" => $head
-        ]);
-    }
+  /**
+   * APP EXPENSE (Pagar)
+   */
+  public function expense()
+  {
+    $head = $this->seo->render(
+      "Minhas despesas - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
 
-    /**
-     * APP LOGOUT
-     */
-    public function logout()
-    {
-        (new Message())->info("Você saiu com sucesso " . Auth::user()->first_name . ". Volte logo :)")->flash();
+    echo $this->view->render("expense", [
+      "head" => $head
+    ]);
+  }
 
-        Auth::logout();
-        redirect("/entrar");
-    }
+  /**
+   * APP INVOICE (Fatura)
+   */
+  public function invoice()
+  {
+    $head = $this->seo->render(
+      "Aluguel - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
+
+    echo $this->view->render("invoice", [
+      "head" => $head
+    ]);
+  }
+
+  /**
+   * APP PROFILE (Perfil)
+   */
+  public function profile()
+  {
+    $head = $this->seo->render(
+      "Meu perfil - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
+
+    echo $this->view->render("profile", [
+      "head" => $head
+    ]);
+  }
+
+  /**
+   * APP LOGOUT
+   */
+  public function logout()
+  {
+    (new Message())->info("Você saiu com sucesso " . Auth::user()->first_name . ". Volte logo :)")->flash();
+
+    Auth::logout();
+    redirect("/entrar");
+  }
 }
