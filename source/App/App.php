@@ -15,44 +15,123 @@ use Source\Support\Message;
  */
 class App extends Controller
 {
-  /** @var User */
-  private $user;
+    /** @var User */
+    private $user;
 
-  /**
-   * App constructor.
-   */
-  public function __construct()
-  {
-    parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_APP . "/");
+    /**
+     * App constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_APP . "/");
 
-    //RESTRIÇÃO
-    //O controlador só vai executar e compor as views caso esteja logado e tenha autorização para tal
-    if (!$this->user = Auth::user()) {
-      $this->message->warning("Efetue login para acessar o App")->flash();
-      redirect("/entrar");
+        if (!$this->user = Auth::user()) {
+            $this->message->warning("Efetue login para acessar o APP.")->flash();
+            redirect("/entrar");
+        }
+
+        (new Access())->report();
+        (new Online())->report();
     }
 
-    (new Access())->report();
-    (new Online())->report();
-  }
+    /**
+     * APP HOME
+     */
+    public function home()
+    {
+        $head = $this->seo->render(
+            "Olá {$this->user->first_name}. Vamos controlar? - " . CONF_SITE_NAME,
+            CONF_SITE_DESC,
+            url(),
+            theme("/assets/images/share.jpg"),
+            false
+        );
 
-  /**
-   * APP HOME
-   */
-  public function home()
-  {
-    echo $this->view->render("home", []);
-  }
+        echo $this->view->render("home", [
+            "head" => $head
+        ]);
+    }
 
-  /**
-   * APP LOGOUT
-   */
-  public function logout()
-  {
-    (new Message())->info("Você saiu com sucesso " . Auth::user()->first_name . ". Volte logo :/")->flash();
+    /**
+     * APP INCOME (Receber)
+     */
+    public function income()
+    {
+        $head = $this->seo->render(
+            "Minhas receitas - " . CONF_SITE_NAME,
+            CONF_SITE_DESC,
+            url(),
+            theme("/assets/images/share.jpg"),
+            false
+        );
 
-    Auth::logout();
+        echo $this->view->render("income", [
+            "head" => $head
+        ]);
+    }
 
-    redirect("/entrar");
-  }
+    /**
+     * APP EXPENSE (Pagar)
+     */
+    public function expense()
+    {
+        $head = $this->seo->render(
+            "Minhas despesas - " . CONF_SITE_NAME,
+            CONF_SITE_DESC,
+            url(),
+            theme("/assets/images/share.jpg"),
+            false
+        );
+
+        echo $this->view->render("expense", [
+            "head" => $head
+        ]);
+    }
+
+    /**
+     * APP INVOICE (Fatura)
+     */
+    public function invoice()
+    {
+        $head = $this->seo->render(
+            "Aluguel - " . CONF_SITE_NAME,
+            CONF_SITE_DESC,
+            url(),
+            theme("/assets/images/share.jpg"),
+            false
+        );
+
+        echo $this->view->render("invoice", [
+            "head" => $head
+        ]);
+    }
+
+    /**
+     * APP PROFILE (Perfil)
+     */
+    public function profile()
+    {
+        $head = $this->seo->render(
+            "Meu perfil - " . CONF_SITE_NAME,
+            CONF_SITE_DESC,
+            url(),
+            theme("/assets/images/share.jpg"),
+            false
+        );
+
+        echo $this->view->render("profile", [
+            "head" => $head
+        ]);
+    }
+
+    /**
+     * APP LOGOUT
+     */
+    public function logout()
+    {
+        (new Message())->info("Você saiu com sucesso " . Auth::user()->first_name . ". Volte logo :)")->flash();
+
+        Auth::logout();
+        redirect("/entrar");
+    }
 }
