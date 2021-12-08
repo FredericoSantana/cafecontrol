@@ -41,10 +41,10 @@ abstract class Model
   protected static $entity;
 
   /** @var array $protected no update or create */
-  protected static $protected;
+  protected static array $protected;
 
   /** @var array $entity database table */
-  protected static $required;
+  protected static array $required;
 
   /**
    * Model constructor.

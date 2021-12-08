@@ -3,7 +3,7 @@ Options All -Indexes
 
 # FSPHP WWW Redirect.
 RewriteCond %{HTTP_HOST} !^www\. [NC]
-RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # FSPHP HTTPS Redirect
 RewriteCond %{HTTP:X-Forwarded-Proto} !https

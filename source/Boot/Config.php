@@ -4,7 +4,7 @@
  */
 const CONF_DB_HOST = "localhost";
 const CONF_DB_USER = "root";
-const CONF_DB_PASS = "";
+const CONF_DB_PASS = "root";
 const CONF_DB_NAME = "mvcoo";
 
 /**
