@@ -96,7 +96,9 @@
     </div>
 </footer>
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TPHRBH888B"></script>
 <script src="<?= theme("/assets/scripts.js"); ?>"></script>
+
 <?= $this->section("scripts"); ?>
 
 </body>
