@@ -117,8 +117,8 @@ modules.xml
 env.ini
 
 # Arquivos minificados
-themes/cafeweb/assets/style.css
-themes/cafeweb/assets/scripts.js
+#themes/cafeweb/assets/style.css
+#themes/cafeweb/assets/scripts.js
 #themes/cafeapp/assets/style.css
 #themes/cafeapp/assets/scripts.js
 #
