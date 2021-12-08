@@ -56,6 +56,18 @@ class User extends Model
   }
 
   /**
+   * @return string|null
+   */
+  public function photo(): ?string
+  {
+    if ($this->photo && file_exists(__DIR__ . "/../../" . CONF_UPLOAD_DIR . "/{$this->photo()}")) {
+      return $this->photo;
+    }
+
+    return null;
+  }
+
+  /**
    * @return bool
    */
   public function save(): bool
