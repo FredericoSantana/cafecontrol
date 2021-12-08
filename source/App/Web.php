@@ -8,6 +8,7 @@ use Source\Models\Category;
 use Source\Models\Faq\Question;
 use Source\Models\Post;
 use Source\Models\User;
+use Source\Support\Email;
 use Source\Support\Pager;
 
 
@@ -23,6 +24,15 @@ class Web extends Controller
   public function __construct()
   {
     parent::__construct(__DIR__ . "/../../themes/" . CONF_VIEW_THEME . "/");
+
+//    $email = new Email();
+//    $email->bootstrap(
+//      "Teste de fila de email " . time(),
+//      "Este é apenas um teste de envio de email",
+//      "fredericosantana11@gmail.com",
+//      "Frederico Santana"
+//    )->sendQueue();
+
   }
 
   /**
@@ -379,7 +389,7 @@ class Web extends Controller
         $data['first_name'],
         $data['last_name'],
         $data['email'],
-        $data['password'],
+        $data['password']
       );
 
       if ($auth->register($user)) {
