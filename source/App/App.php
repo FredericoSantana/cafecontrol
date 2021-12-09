@@ -37,6 +37,8 @@ class App extends Controller
 
     (new Access())->report();
     (new Online())->report();
+
+    (new AppInvoice())->fixed($this->user, 3);
   }
 
   /**
