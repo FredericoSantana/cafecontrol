@@ -7,6 +7,7 @@ use Source\Core\View;
 use Source\Models\Auth;
 use Source\Models\CafeApp\AppCategory;
 use Source\Models\CafeApp\AppInvoice;
+use Source\Models\CafeApp\AppWallet;
 use Source\Models\Post;
 use Source\Models\Report\Access;
 use Source\Models\Report\Online;
@@ -68,8 +69,8 @@ class App extends Controller
 
     $chart = (new AppInvoice())
       ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 5 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
-            "user={$this->user->id}&status=paid",
-           "
+        "user={$this->user->id}&status=paid",
+        "
              year(due_at) AS due_year,
              month(due_at) AS due_month,
              DATE_FORMAT(due_at, '%m/%Y') AS due_date,
@@ -177,7 +178,7 @@ class App extends Controller
   /**
    * @param array|null $data
    */
-  public function income(?array $data):void
+  public function income(?array $data): void
   {
     $head = $this->seo->render(
       "Minhas receitas - " . CONF_SITE_NAME,
@@ -351,7 +352,7 @@ class App extends Controller
 
     if ($invoice->type == "income") {
       $this->message->success("Receita lançada com sucesso. Use o filtro para controlar.")->render();
-    }else{
+    } else {
       $this->message->success("Despesa lançada com sucesso. Use o filtro para controlar.")->render();
     }
 
@@ -390,11 +391,14 @@ class App extends Controller
 
   }
 
+
   /**
-   * APP INVOICE (Fatura)
+   * @param array $data
    */
-  public function invoice()
+  public function invoice(array $data): void
   {
+//    if (!empty($data))
+
     $head = $this->seo->render(
       "Aluguel - " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -403,8 +407,28 @@ class App extends Controller
       false
     );
 
+    $invoice = (new AppInvoice())->find(
+      "user_id = :user AND id = :invoice",
+      "user={$this->user->id}&invoice={$data["invoice"]}"
+    )->fetch();
+
+    if (!$invoice) {
+      $this->message->error("Ooops! Você tentou acessar uma fatura que não existe")->flash();
+      redirect("/app");
+    }
+
     echo $this->view->render("invoice", [
-      "head" => $head
+      "head" => $head,
+      "invoice" => $invoice,
+      "wallets" => (new AppWallet())
+        ->find("user_id = :user", "user={$this->user->id}", "id, wallet")
+        ->order("wallet")
+        ->fetch(true),
+      "categories" => (new AppCategory())
+        ->find("type = :type", "type={$invoice->category()->type}")
+        ->order("order_by")
+        ->fetch(true)
+
     ]);
   }
 
