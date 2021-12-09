@@ -61,11 +61,33 @@ class App extends Controller
     $chartData->income = "0,0,0,0,0";
 
     $chart = (new AppInvoice())
-      ->find("user_id = :user","user={$this->user->id}")
-      ->limit(5)
+      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 4 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
+            "user={$this->user->id}&status=paid",
+           "
+             year(due_at) AS due_year,
+             month(due_at) AS due_month,
+             DATE_FORMAT(due_at, '%m/%Y') AS due_date,
+             (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'income' AND year(due_at) = due_year AND month(due_at) = due_month) AS income,
+             (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'expense' AND year(due_at) = due_year AND month(due_at) = due_month) AS expense
+             "
+      )->limit(5)
       ->fetch(true);
 
-    var_dump($chart);
+    if ($chart) {
+      $chartCategories = [];
+      $chartExpense = [];
+      $chartIncome = [];
+
+      foreach ($chart as $chartItem) {
+        $chartCategories[] = $chartItem->due_date;
+        $chartExpense[] = $chartItem->expense;
+        $chartIncome[] = $chartItem->income;
+      }
+
+      $chartData->categories = "'" . implode("','", $chartCategories) . "'";
+      $chartData->expense = implode(",", array_map("abs", $chartExpense));
+      $chartData->income = implode(",", array_map("abs", $chartIncome));
+    }
 
     //END CHART
 
