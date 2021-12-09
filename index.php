@@ -58,9 +58,10 @@ $route->get("/", "App:home");
 $route->get("/receber", "App:income");
 $route->get("/pagar", "App:expense");
 $route->get("/fatura/{invoice_id}", "App:invoice");
-
 $route->get("/perfil", "App:profile");
 $route->get("/sair", "App:logout");
+
+$route->post("/launch", "App:launch");
 
 /**
  * ERROR ROUTES
