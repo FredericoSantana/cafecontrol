@@ -67,10 +67,7 @@ class AppInvoice extends Model
           $newItem->save();
         }
       }
-
-
     }
-
   }
 
   /**

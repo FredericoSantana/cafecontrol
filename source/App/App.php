@@ -145,12 +145,33 @@ class App extends Controller
     ]);
   }
 
+
   /**
    * @param array $data
+   * @throws \Exception
    */
   public function filter(array $data)
   {
-    var_dump($data);
+    $status = (!empty($data["status"]) ? $data["status"] : "all");
+    $category = (!empty($data["category"]) ? $data["category"] : "all");
+    $date = (!empty($data["date"]) ? $data["date"] : date("m/Y"));
+
+    list($m, $y) = explode("/", $date);
+    $m = ($m >= 1 && $m <= 12 ? $m : date("m"));
+    $y = ($y <= date("Y", strtotime("+10year")) ? $y : date("Y", strtotime("+10year")));
+
+    $start = new \DateTime(date("Y-m-t"));
+    $end = new \DateTime(date("Y-m-t", strtotime("{$y}-{$m}+1month")));
+    $diff = $start->diff($end);
+
+    if (!$diff->invert) {
+      $afterMonths = (floor($diff->days / 30));
+      (new AppInvoice())->fixed($this->user, $afterMonths);
+    }
+
+    $redirect = ($data["filter"] == "income" ? 'receber' : 'pagar');
+    $json["redirect"] = url("/app/{$redirect}/{$status}/{$category}/{$m}-{$y}");
+    echo json_encode($json);
   }
 
   /**
