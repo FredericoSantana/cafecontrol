@@ -62,7 +62,7 @@ class App extends Controller
     $chartData->income = "0,0,0,0,0";
 
     $chart = (new AppInvoice())
-      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 4 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
+      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 5 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
             "user={$this->user->id}&status=paid",
            "
              year(due_at) AS due_year,
@@ -212,10 +212,8 @@ class App extends Controller
     $invoice->enrollments = ($data["enrollments"] ?? 1);
     $invoice->enrollment_of = 1;
     $invoice->status = ($data["repeat_when"] == "fixed" ? "paid" : $status);
-    $invoice->save();
 
     if (!$invoice->save()) {
-      var_dump($invoice);
       $json["message"] = $invoice->message()->before("Ooops! ")->render();
       echo json_encode($json);
       return;
@@ -223,14 +221,13 @@ class App extends Controller
 
     if ($invoice->repeat_when == "enrollment") {
       $invoiceOf = $invoice->id;
-      for ($enrollment = 1; $enrollment < $invoice->enrollment; $enrollment++) {
+      for ($enrollment = 1; $enrollment < $invoice->enrollments; $enrollment++) {
         $invoice->id = null;
-        $invoice->invoiceOf = $invoiceOf;
-        $invoice->due_at = date("Y-m-d", strtotime($data["due_at"] . "+{$enrollment}mounth"));
-        $invoice->status = (date($data->due_at) <= date("Y-m-d") ? "paid" : "unpaid");
+        $invoice->invoice_of = $invoiceOf;
+        $invoice->due_at = date("Y-m-d", strtotime($data["due_at"] . "+{$enrollment}month"));
+        $invoice->status = (date($invoice->due_at) <= date("Y-m-d") ? "paid" : "unpaid");
         $invoice->enrollment_of = $enrollment + 1;
         $invoice->save();
-
       }
     }
 
