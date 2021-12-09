@@ -62,6 +62,7 @@ $route->get("/perfil", "App:profile");
 $route->get("/sair", "App:logout");
 
 $route->post("/launch", "App:launch");
+$route->post("/support", "App:support");
 
 /**
  * ERROR ROUTES
