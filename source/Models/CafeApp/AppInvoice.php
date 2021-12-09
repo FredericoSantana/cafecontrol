@@ -105,4 +105,32 @@ class AppInvoice extends Model
   {
     return (new AppCategory())->findById($this->category_id);
   }
+
+  /**
+   * @param User $user
+   * @param int $year
+   * @param int $month
+   * @param string $type
+   * @return object|null
+   */
+  public function balance(User $user, int $year, int $month, string $type): ?object
+  {
+    $onpaid = $this->find(
+      "user_id = :user",
+      "user={$user->id}&type={$type}&year={$year}&month={$month}",
+      "
+      (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'paid') AS paid,
+      (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'unpaid') AS unpaid,
+      "
+    )->fetch();
+
+    if (!$onpaid) {
+      return null;
+    }
+
+    return (object)[
+      "paid" => str_price(($onpaid->paid ?? 0)),
+      "unpaid" => str_price(($onpaid->unpaid ?? 0))
+    ];
+  }
 }

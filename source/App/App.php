@@ -241,6 +241,58 @@ class App extends Controller
 
   /**
    * @param array $data
+   * @throws \Exception
+   */
+  public function support(array $data): void
+  {
+    if (empty($data["message"])) {
+      $json["message"] = $this->message->warning("Para enviar escreva sua mensagem")->render();
+      echo json_encode($json);
+      return;
+    }
+
+    if (request_limit("appsupport", 3, 300)) {
+      $json["message"] = $this->message->warning(
+        "Por favor aguarde 5 minutos para enviar novos contatos, sugestões ou reclamações"
+      )->render();
+      echo json_encode($json);
+      return;
+    }
+
+    if (request_repeat("message", $data["message"])) {
+      $json["message"] = $this->message->info(
+        "Já recebemos sua solicitação {$this->user->first_name}. Agradecemos pelo contato e responderemos em breve."
+      )->render();
+      echo json_encode($json);
+      return;
+    }
+
+    $subject = date_fmt() . " - {$data["subject"]}";
+    $message = filter_var($data["message"], FILTER_SANITIZE_STRING);
+
+    $view = new View(__DIR__ . "/../../shared/views/email", "php");
+    $body = $view->render("mail", [
+      "subject" => $subject,
+      "message" => str_textarea($message)
+    ]);
+
+    (new Email())->bootstrap(
+      $subject,
+      $body,
+      CONF_MAIL_SUPPORT,
+      "Suporte " . CONF_SITE_NAME,
+    )->queue($this->user->email, "{$this->user->first_name} {$this->user->last_name}");
+
+    $this->message->success(
+      "Recebemos sua solicitação {$this->user->first_name}. Agradecemos pelo contato e responderemos em breve."
+    )->flash();
+    $json["reload"] = true;
+    echo json_encode($json);
+
+  }
+
+  /**
+   * @param array $data
    */
   public function launch(array $data): void
   {
@@ -309,52 +361,31 @@ class App extends Controller
 
   /**
    * @param array $data
-   * @throws \Exception
    */
-  public function support(array $data): void
+  public function onpaid(array $data): void
   {
-    if (empty($data["message"])) {
-      $json["message"] = $this->message->warning("Para enviar escreva sua mensagem")->render();
+    $invoice = (new AppInvoice())
+      ->find("user_id = :user AND id = :id", "user={$this->user->id}&id={$data["invoice"]}")
+      ->fetch();
+
+    if (!$invoice) {
+      $this->message->error("Ooops! Ocorreu um erro ao atualizar :/")->flash();
+      $json["reload"] = true;
       echo json_encode($json);
-      return;
     }
 
-    if (request_limit("appsupport", 3, 300)) {
-      $json["message"] = $this->message->warning(
-        "Por favor aguarde 5 minutos para enviar novos contatos, sugestões ou reclamações"
-      )->render();
-      echo json_encode($json);
-      return;
+    $invoice->status = ($invoice->status == "paid" ? "unpaid" : "paid");
+    $invoice->save();
+
+    $y = date("Y");
+    $m = date("m");
+
+    if ($data["date"]) {
+      list($m, $y) = explode("/", $data["date"]);
     }
 
-    if (request_repeat("message", $data["message"])) {
-      $json["message"] = $this->message->info(
-        "Já recebemos sua solicitação {$this->user->first_name}. Agradecemos pelo contato e responderemos em breve."
-      )->render();
-      echo json_encode($json);
-      return;
-    }
+    $json["onpaid"] = (new AppInvoice())->balance($this->user, $y, $m, $invoice->type);
 
-    $subject = date_fmt() . " - {$data["subject"]}";
-    $message = filter_var($data["message"], FILTER_SANITIZE_STRING);
-
-    $view = new View(__DIR__ . "/../../shared/views/email", "php");
-    $body = $view->render("mail", [
-      "subject" => $subject,
-      "message" => str_textarea($message)
-    ]);
-
-    (new Email())->bootstrap(
-      $subject,
-      $body,
-      CONF_MAIL_SUPPORT,
-      "Suporte " . CONF_SITE_NAME,
-    )->queue($this->user->email, "{$this->user->first_name} {$this->user->last_name}");
-
-    $this->message->success(
-      "Recebemos sua solicitação {$this->user->first_name}. Agradecemos pelo contato e responderemos em breve."
-    )->flash();
-    $json["reload"] = true;
     echo json_encode($json);
 
   }
