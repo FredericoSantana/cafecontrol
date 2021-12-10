@@ -387,6 +387,7 @@ class App extends Controller
 
     $json["onpaid"] = (new AppInvoice())->balance($this->user, $y, $m, $invoice->type);
 
+    $json["reload"] = true;
     echo json_encode($json);
 
   }
@@ -397,7 +398,73 @@ class App extends Controller
    */
   public function invoice(array $data): void
   {
-//    if (!empty($data))
+    if (!empty($data["update"])) {
+      $invoice = (new AppInvoice())->find(
+        "user_id = :user AND id = :id",
+        "user={$this->user->id}&id={$data["invoice"]}"
+      )->fetch();
+
+      if (!$invoice) {
+        $json["message"] = $this->message->error(
+          "Ooops! Não foi possível carregar a fatura {$this->first_name}. Você pode tentar novamente."
+        )->render();
+        echo json_encode($json);
+        return;
+      }
+
+      if ($data["due_day"] < 1 || $data["due_day"] > $dayOfMonth = date("t", strtotime($invoice->due_at))) {
+        $json["message"] = $this->message->warning(
+          "O vencimento deve ser entre dia 1 e dia {$dayOfMonth} para este mês."
+        )->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $due_day = date("Y-m", strtotime($invoice->due_at)) . "-" . $data["due_day"];
+      $invoice->category_id = $data["category"];
+      $invoice->description = $data["description"];
+      $invoice->due_at = date("Y-m-d", strtotime($due_day));
+      $invoice->value = str_replace([".", ","], ["", "."], $data["value"]);
+      $invoice->wallet_id = $data["wallet"];
+      $invoice->status = $data["status"];
+
+      if (!$invoice->save()) {
+        $json["message"] = $invoice->message()->before("Oooops! ")->after(" {$this->user->first_name}.")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $invoiceOf = (new AppInvoice())->find(
+        "user_id = :user AND invoice_of = :of",
+        "user={$this->user->id}&of={$invoice->id}"
+      )->fetch(true);
+
+      if (!empty($invoiceOf) && in_array($invoice->type, ["fixed_income", "fixed_expense"])) {
+        foreach ($invoiceOf as $invoiceItem) {
+          if ($data["status"] == "unpaid" && $invoiceItem->status == "unpaid") {
+            $invoiceItem->destroy();
+          }else{
+            $due_day = (date("Y-m", strtotime($invoiceItem->due_at)) . "-" . $data["due_day"]);
+            $invoiceItem->category_id = $data["category"];
+            $invoiceItem->description = $data["description"];
+            $invoiceItem->wallet_id = $data["wallet"];
+
+            if ($invoiceItem->status == "unpaid") {
+              $invoiceItem->value = str_replace([".", ","], ["", "."], $data["value"]);
+              $invoiceItem->due_at = date("Y-m-d", strtotime($due_day));
+            }
+
+            $invoiceItem->save();
+          }
+        }
+      }
+
+      $json["message"] = $this->message->success("Pronto {$this->user->first_name}, a atualização foi efetuada com sucesso!")->render();
+      $json["data"] = $data;
+      echo json_encode($json);
+      return;
+    }
 
     $head = $this->seo->render(
       "Aluguel - " . CONF_SITE_NAME,
