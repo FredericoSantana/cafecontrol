@@ -249,6 +249,7 @@ body {
 .app_header_widget {
     display: flex;
     font-size: var(--font-small);
+    text-align: center;
 }
 
 .app_header_widget li {
@@ -264,6 +265,29 @@ body {
     background-size: 200% auto;
     color: #ffffff;
 }
+
+.app_header_widget .wallet {
+    position: relative;
+    width: 200px;
+    max-width: 100%;
+}
+
+.app_header_widget .wallet ul {
+    left: 0;
+    top: 100%;
+    width: 100%;
+    display: none;
+    position: absolute;
+    z-index: var(--index-menu);
+    padding: 0 10px 10px 10px;
+    background: #F7FBFC;
+    border-radius: 0 0 4px 4px;
+}
+
+.app_header_widget .wallet ul li {
+    margin-top: 10px;
+}
+
 
 .app_header_widget_mobile {
     margin-left: var(--area-normal);
@@ -341,6 +365,7 @@ body {
 }
 
 /*nav*/
+.app_sidebar_nav span,
 .app_sidebar_nav a {
     display: block;
     padding: var(--area-small) var(--area-normal);
@@ -350,8 +375,10 @@ body {
     color: var(--body-color);
     font-weight: var(--weight-bold);
     text-decoration: none;
+    cursor: pointer;
 }
 
+.app_sidebar_nav span:hover,
 .app_sidebar_nav a:hover,
 .app_sidebar_nav a.active {
     background: var(--body-color);
@@ -555,9 +582,11 @@ body {
 }
 
 .app_flex_title h2 {
-    font-size: var(--font-medium);
-    font-weight: var(--weight-light);
-    text-transform: uppercase;
+    display: inline-block;
+    font-size: var(--font-small);
+    font-weight: var(--weight-bold);
+    padding: 3px 20px;
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .app_flex_amount {
@@ -811,6 +840,306 @@ body {
     padding-left: var(--area-box);
 }
 
+/*WALLETS*/
+.app_wallets {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.app_wallets .wallet {
+    flex-basis: calc(50% - 10px);
+    margin: 0 10px 20px 0;
+    background-size: 200%;
+    text-align: center;
+    padding: 30px;
+    color: #ffffff;
+    position: relative;
+}
+
+.app_wallets .wallet_add p {
+    margin: 10px 0 20px 0 !important;
+    font-size: var(--font-small);
+}
+
+.app_wallets .wallet_add input {
+    margin: 0 0 20px 0 !important;
+    font-size: var(--font-normal) !important;
+    display: inline-block;
+    width: 100%;
+}
+
+.app_wallets .wallet_add .btn {
+    display: inline-block;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.app_wallets .wallet_add .btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.app_wallets .wallet_add .form_btn {
+    cursor: pointer;
+    border: none;
+    padding: 10px;
+    font-size: var(--font-normal);
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.app_wallets .wallet_remove {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: var(--font-medium);
+}
+
+.wallet_overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-yellow);
+}
+
+.wallet_overlay div {
+    margin: auto;
+    padding: 30px;
+}
+
+.wallet_overlay div p {
+    font-size: var(--font-small);
+    margin: 20px 0 20px 0 !important;
+}
+
+.wallet_overlay div .btn {
+    background: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.wallet_overlay div .btn:hover {
+    background: var(--color-red);
+}
+
+.wallet_overlay_close {
+    display: block;
+    margin-top: 15px;
+    font-size: var(--font-small);
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.wallet_overlay_close:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.app_wallets .wallet:nth-child(2n+0) {
+    margin: 0 0 20px 10px;
+}
+
+.app_wallets .wallet h2 {
+    font-size: calc(var(--font-large) * 2);
+}
+
+.app_wallets .wallet input {
+    margin: 0 0 20px 0;
+    text-align: center;
+    font-size: var(--font-large);
+    padding-bottom: 10px;
+    border: none;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
+    background: none;
+    outline: none;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.app_wallets .wallet p {
+    margin: 0;
+}
+
+.app_wallets .wallet .wallet_balance {
+    font-size: var(--font-large);
+    font-weight: var(--weight-bold);
+    margin-bottom: 5px;
+}
+
+/*SIGNATURE*/
+.app_signature {
+    overflow: hidden;
+    -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.app_signature_header {
+    padding: 40px;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.app_signature_header h2 {
+    font-size: var(--font-large);
+    font-weight: var(--weight-black);
+}
+
+.app_signature_header p {
+    font-weight: var(--weight-bold);
+}
+
+.app_signature_header .icon {
+    font-size: calc(var(--font-large) * 3);
+}
+
+.app_signature_me {
+    padding: 40px;
+    background: #ffffff;
+}
+
+.app_signature_me p {
+    margin: 0;
+}
+
+.app_signature_me_header {
+    text-align: center;
+    color: #888888;
+    margin: 30px 0;
+}
+
+.app_signature_detail {
+    padding: 20px;
+    background: #FAFAFA;
+    margin-bottom: 20px;
+    font-size: var(--font-small);
+}
+
+.app_signature_detail li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.app_signature_detail li:nth-child(2n+0) {
+    background: #ffffff;
+}
+
+.app_signature_detail li span{
+    flex-basis: 50%;
+    padding: 15px;
+    color: #888888;
+}
+
+.app_signature_info{
+    color: #888888;
+    font-size: var(--font-small);
+}
+
+.app_signature_orders_item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-small);
+    color: #888888;
+    text-align: center;
+}
+
+.app_signature_orders_item:nth-child(2n+0){
+    background: #FAFAFA;
+}
+
+.app_signature_orders_item p{
+    padding: 15px;
+    flex-basis: 33.33%;
+}
+
+.app_signature_resources {
+    padding: 40px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.app_signature_resources h3 {
+    font-size: var(--font-large);
+    margin-bottom: 30px;
+    color: #888888;
+}
+
+.app_signature_resources p {
+    margin: 0;
+}
+
+.app_signature_resources_item {
+    color: #888888;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+}
+
+.app_signature_resources_item.title {
+    padding: 20px 0;
+    font-weight: bold;
+    color: #cccccc;
+}
+
+.app_signature_resources_item p {
+    padding: 15px;
+    flex-basis: 33.33%;
+}
+
+.app_signature_resources_item:nth-child(2n+1) {
+    background: #FAFAFA;
+}
+
+.app_signature_resources_item .icon-check {
+    color: var(--color-green);
+}
+
+.app_signature_resources_item .icon-error {
+    color: var(--color-red);
+}
+
+
+.app_signature_resources_item .resouce {
+    font-weight: var(--weight-bold);
+}
+
+.app_signature_pay {
+    padding: 0 40px 40px 40px;
+    background: #ffffff;
+}
+
+.app_signature_pay header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #888888;
+}
+
+.app_signature_pay header p {
+    margin-top: 5px;
+    font-size: var(--font-small)
+}
+
+.app_signature_pay_card {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.app_signature_pay_card .label_check {
+    margin-bottom: 20px;
+}
+
 
 @media (min-width: 82em) {
     .app_sidebar {
@@ -908,6 +1237,12 @@ body {
     .app_launch_item p.desc {
         flex-basis: 55%;
     }
+
+    .app_wallets .wallet,
+    .app_wallets .wallet:nth-child(2n+0) {
+        flex-basis: 100%;
+        margin: 0 0 20px 0;
+    }
 }
 
 @media (max-width: 42em) {
@@ -931,6 +1266,14 @@ body {
 
     .app_formbox_photo div {
         width: calc(100% - 80px);
+    }
+
+    .app_signature_resources_item p.check {
+        flex-basis: 20%;
+    }
+
+    .app_signature_resources_item p.resouce {
+        flex-basis: 60%;
     }
 }
 

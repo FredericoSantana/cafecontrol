@@ -59,6 +59,31 @@ class App extends Controller
   }
 
   /**
+   * @param array|null $data
+   */
+  public function dash(?array $data): void
+  {
+    //CHART UPDATE
+    $chartData = (new AppInvoice())->chartData($this->user);
+    $categories = str_replace("'", "", explode(",", $chartData->categories));
+    $json["cahrt"] = [
+      "categories" => $categories,
+      "income" => array_map("abs", explode(",", $chartData->income)),
+      "expense" => array_map("abs", explode(",", $chartData->expense)),
+    ];
+
+    //WALLET
+    $wallet = (new AppInvoice())->balance($this->user);
+    $wallet->wallet = str_price($wallet->wallet);
+    $wallet->status = ($wallet->balance == "positive" ? "gradient-green" : "gradient-red");
+    $wallet->income = str_price($wallet->income);
+    $wallet->expense = str_price($wallet->expense);
+    $json["wallet"] = $wallet;
+
+    echo json_encode($json);
+  }
+
+  /**
    * APP HOME
    */
   public function home()
@@ -73,44 +98,7 @@ class App extends Controller
 
     //CHART
 
-    $dateChart = [];
-    for ($month = -4; $month <= 0; $month++) {
-      $dateChart[] = date("m/Y", strtotime("{$month}month"));
-    }
-
-    $chartData = new \stdClass();
-    $chartData->categories = "'" . implode("','", $dateChart) . "'";
-    $chartData->expense = "0,0,0,0,0";
-    $chartData->income = "0,0,0,0,0";
-
-    $chart = (new AppInvoice())
-      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 5 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
-        "user={$this->user->id}&status=paid",
-        "
-             year(due_at) AS due_year,
-             month(due_at) AS due_month,
-             DATE_FORMAT(due_at, '%m/%Y') AS due_date,
-             (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'income' AND year(due_at) = due_year AND month(due_at) = due_month) AS income,
-             (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'expense' AND year(due_at) = due_year AND month(due_at) = due_month) AS expense
-             "
-      )->limit(5)
-      ->fetch(true);
-
-    if ($chart) {
-      $chartCategories = [];
-      $chartExpense = [];
-      $chartIncome = [];
-
-      foreach ($chart as $chartItem) {
-        $chartCategories[] = $chartItem->due_date;
-        $chartExpense[] = $chartItem->expense;
-        $chartIncome[] = $chartItem->income;
-      }
-
-      $chartData->categories = "'" . implode("','", $chartCategories) . "'";
-      $chartData->expense = implode(",", array_map("abs", $chartExpense));
-      $chartData->income = implode(",", array_map("abs", $chartIncome));
-    }
+    $chartData = (new AppInvoice())->chartData($this->user);
 
     //END CHART
 
@@ -132,18 +120,7 @@ class App extends Controller
 
     //WALLET
 
-    $wallet = (new AppInvoice())->find(
-      "user_id = :user AND status = :status",
-      "user={$this->user->id}&status=paid",
-      "
-          (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'income') AS income,
-          (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'expense') AS expense
-      ")->fetch();
-
-    if ($wallet) {
-      $wallet->wallet = $wallet->income - $wallet->expense;
-    }
-
+    $wallet = (new AppInvoice())->balance($this->user);
     //END WALLET
 
     //POSTS
@@ -419,11 +396,11 @@ class App extends Controller
     $y = date("Y");
     $m = date("m");
 
-    if ($data["date"]) {
+    if (!empty($data["date"])) {
       list($m, $y) = explode("/", $data["date"]);
     }
 
-    $json["onpaid"] = (new AppInvoice())->balance($this->user, $y, $m, $invoice->type);
+    $json["onpaid"] = (new AppInvoice())->balanceMonth($this->user, $y, $m, $invoice->type);
 
 //    $json["reload"] = true;
     echo json_encode($json);

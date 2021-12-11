@@ -28,7 +28,6 @@
         $unpaid = 0;
         $paid = 0;
         foreach ($invoices as $invoice):
-            ($invoice->type == "fixed_income" ? $paid += $invoice->value : $unpaid += $invoice->value);
             ?>
             <article class="app_launch_item">
                 <p class="desc app_invoice_link transition">
@@ -48,10 +47,5 @@
                 </p>
             </article>
         <?php endforeach; ?>
-
-        <div class="app_launch_item footer">
-            <p>Despesas: R$ <?= str_price($unpaid); ?></p>
-            <p>Receitas: R$ <?= str_price($paid); ?></p>
-        </div>
     <?php endif; ?>
 </section>

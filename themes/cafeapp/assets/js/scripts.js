@@ -17,6 +17,14 @@ $(function () {
         }
     });
 
+    // scroll animate
+    $("[data-go]").click(function (e) {
+        e.preventDefault();
+
+        var goto = $($(this).data("go")).offset().top;
+        $("html, body").animate({scrollTop: goto}, goto / 2);
+    });
+
     /*
      * APP MODAL
      */
@@ -101,6 +109,7 @@ $(function () {
     $(".mask-date").mask('00/00/0000', {reverse: true});
     $(".mask-month").mask('00/0000', {reverse: true});
     $(".mask-doc").mask('000.000.000-00', {reverse: true});
+    $(".mask-card").mask('0000  0000  0000  0000', {reverse: true});
 
     /*
      * AJAX FORM
@@ -134,7 +143,7 @@ $(function () {
                 if (response.redirect) {
                     window.location.href = response.redirect;
                 } else {
-                    load.fadeOut(200);(200);
+                    load.fadeOut(200);
                 }
 
                 //reload
@@ -163,12 +172,15 @@ $(function () {
             },
             error: function () {
                 var message = "<div class='message error icon-warning'>Desculpe mas não foi possível processar a requisição. Favor tente novamente!</div>";
+
                 if (flash.length) {
                     flash.html(message).fadeIn(100).effect("bounce", 300);
                 } else {
                     form.prepend("<div class='" + flashClass + "'>" + message + "</div>")
                         .find("." + flashClass).effect("bounce", 300);
                 }
+
+                load.fadeOut();
             }
         });
     });
@@ -192,7 +204,9 @@ $(function () {
         }, "json");
     });
 
-
+    /*
+     * IMAGE RENDER
+     */
     $("[data-image]").change(function (e) {
         var changed = $(this);
         var file = this;
@@ -206,11 +220,9 @@ $(function () {
                         .fadeTo(100, 1);
                 });
             };
-
             render.readAsDataURL(file.files[0]);
         }
     });
-
 
     /*
      * APP INVOICE REMOVE
@@ -226,5 +238,59 @@ $(function () {
                 }
             }, "json");
         }
-    })
+    });
+
+    /*
+     * WALLET FILTER
+     */
+    $(".app_header_widget .wallet").mouseenter(function () {
+        $(this).find("ul").slideDown(200);
+    }).mouseleave(function () {
+        $(this).find("ul").slideUp(200);
+    });
+
+    $("[data-walletfilter]").click(function (e) {
+        var wallet = $(this).data("wallet");
+        var endpoint = $(this).data("walletfilter");
+
+        $(".ajax_load")
+            .fadeIn(200)
+            .css("display", "flex")
+            .find(".ajax_load_box_title")
+            .text("Aguarde, abrindo carteira...");
+
+        $.post(endpoint, {wallet: wallet}, function (e) {
+            window.location.reload();
+        }, "json");
+    });
+
+    /*
+     * WALLET EDIT
+     */
+    $("[data-walletedit]").change(function () {
+        var wallet = $(this).val();
+        var endpoint = $(this).data("walletedit");
+        $.post(endpoint, {wallet_edit: wallet}, "json");
+    });
+
+    /*
+     * WALLET DELETE
+     */
+    $(".wallet_action").click(function () {
+        $(this).parent().find(".wallet_overlay").fadeIn(200).css("display", "flex");
+    });
+
+    $(".wallet_overlay_close").click(function () {
+        $(this).parents(".wallet").find(".wallet_overlay").fadeOut(200);
+    });
+
+    $("[data-walletremove]").click(function () {
+        var wallet = $(this).data("wallet");
+        var endpoint = $(this).data("walletremove");
+
+        $(".ajax_load").fadeIn(200).css("display", "flex").find(".ajax_load_box_title").text("Removendo carteira...");
+        $.post(endpoint, {wallet_remove: wallet}, function (e) {
+            window.location.reload();
+        });
+    });
 });

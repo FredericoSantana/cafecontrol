@@ -1,6 +1,6 @@
 <?php $this->layout("_theme", ["head" => $head]); ?>
-<div class="app_launch_header">
 
+<div class="app_launch_header">
     <form class="app_launch_form_filter app_form" action="<?= url("/app/filter"); ?>" method="post">
         <input type="hidden" name="filter" value="<?= $type; ?>"/>
 
@@ -66,9 +66,9 @@
             ?>
             <article class="app_launch_item">
                 <p class="desc app_invoice_link transition">
-                    <a title="<?= $invoice->description; ?>" href="<?= url("/app/fatura/{$invoice->id}"); ?>">
-                      <?= str_limit_words($invoice->description,3, "&nbsp;<span class='icon-info icon-notext'></span>") ?>
-                    </a>
+                    <a title="<?= $invoice->description; ?>"
+                       href="<?= url("/app/fatura/{$invoice->id}"); ?>"><?= str_limit_words($invoice->description,
+                            3, "&nbsp;<span class='icon-info icon-notext'></span>") ?></a>
                 </p>
                 <p class="date">Dia <?= date_fmt($invoice->due_at, "d"); ?></p>
                 <p class="category"><?= $invoice->category()->name; ?></p>
@@ -76,11 +76,14 @@
                     <?php if ($invoice->repeat_when == "fixed"): ?>
                         <span class="app_invoice_link">
                             <a href="<?= url("/app/fatura/{$invoice->invoice_of}"); ?>" class="icon-exchange"
-                               title="Controlar">Fixa</a>
+                               title="Controlar Conta Fixa">Fixa</a>
                         </span>
                     <?php elseif ($invoice->repeat_when == 'enrollment'): ?>
-                        <?= str_pad($invoice->enrollment_of, 2, 0, 0); ?> de <?= str_pad($invoice->enrollments, 2, 0,
-                            0); ?>
+                        <span class="app_invoice_link">
+                            <a href="<?= url("/app/fatura/{$invoice->invoice_of}"); ?>"
+                               title="Controlar Parcelamento"><?= str_pad($invoice->enrollment_of, 2, 0,
+                                    0); ?> de <?= str_pad($invoice->enrollments, 2, 0, 0); ?></a>
+                        </span>
                     <?php else: ?>
                         <span class="icon-calendar-check-o">Única</span>
                     <?php endif; ?>
