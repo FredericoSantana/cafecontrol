@@ -387,7 +387,7 @@ class App extends Controller
 
     $json["onpaid"] = (new AppInvoice())->balance($this->user, $y, $m, $invoice->type);
 
-    $json["reload"] = true;
+//    $json["reload"] = true;
     echo json_encode($json);
 
   }
@@ -444,7 +444,7 @@ class App extends Controller
         foreach ($invoiceOf as $invoiceItem) {
           if ($data["status"] == "unpaid" && $invoiceItem->status == "unpaid") {
             $invoiceItem->destroy();
-          }else{
+          } else {
             $due_day = (date("Y-m", strtotime($invoiceItem->due_at)) . "-" . $data["due_day"]);
             $invoiceItem->category_id = $data["category"];
             $invoiceItem->description = $data["description"];
@@ -505,23 +505,46 @@ class App extends Controller
   public function remove(array $data): void
   {
     $invoice = (new AppInvoice())->find("user_id = :user AND id = :invoice",
-    "user={$this->user->id}&invoice={$data["invoice"]}")->fetch();
+      "user={$this->user->id}&invoice={$data["invoice"]}")->fetch();
 
     if ($invoice) {
       $invoice->destroy();
     }
-    
+
     $this->message->success("Tudo pronto {$this->user->first_name}. O lançamento foi removido com sucesso!")->flash();
     $json["redirect"] = url("/app");
     echo json_encode($json);
-    
   }
 
   /**
-   * APP PROFILE (Perfil)
+   * @param array|null $data
    */
-  public function profile()
+  public function profile(?array $data): void
   {
+    if (!empty($data["update"])) {
+      list($d,$m,$y) = explode("/", $data["datebirth"]);
+      $user = (new User())->findById($this->user->id);
+      $user->first_name = $data["first_name"];
+      $user->last_name = $data["last_name"];
+      $user->genre = $data["genre"];
+      $user->datebirth = "{$y}-{$m}-{$d}";
+      $user->document = preg_replace("/[^0-9]/", "", $data["document"]);
+
+
+
+      if (!$user->save()) {
+        $json["message"] = $user->message()->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $json["message"] = $this->message->success(
+        "Pronto {$this->user->first_name}. Seus dados foram atualziados com sucesso."
+      )->render();
+      echo json_encode($json);
+      return;
+    }
+
     $head = $this->seo->render(
       "Meu perfil - " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -531,7 +554,13 @@ class App extends Controller
     );
 
     echo $this->view->render("profile", [
-      "head" => $head
+      "head" => $head,
+      "user" => $this->user,
+      "photo" => (
+        $this->user->photo() ?
+        image($this->user->photo, 360, 360) :
+        theme("/assets/images/avatar.jpg", CONF_VIEW_APP)
+      )
     ]);
   }
 
