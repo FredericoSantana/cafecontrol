@@ -256,6 +256,7 @@ class Web extends Controller
       $login = $auth->login($data['email'], $data['password'], $save);
 
       if ($login) {
+        $this->message->success("Seja bem vindo(a) de volta " . Auth::user()->first_name . "!")->flash();
         $json['redirect'] = url("/app");
       } else {
         $json['message'] = $auth->message()->before("Ooops! ")->render();
