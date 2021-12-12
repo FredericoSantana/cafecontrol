@@ -66,7 +66,7 @@ class App extends Controller
     //CHART UPDATE
     $chartData = (new AppInvoice())->chartData($this->user);
     $categories = str_replace("'", "", explode(",", $chartData->categories));
-    $json["cahrt"] = [
+    $json["chart"] = [
       "categories" => $categories,
       "income" => array_map("abs", explode(",", $chartData->income)),
       "expense" => array_map("abs", explode(",", $chartData->expense)),
