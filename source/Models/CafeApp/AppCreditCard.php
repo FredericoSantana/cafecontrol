@@ -62,7 +62,61 @@ class AppCreditCard extends Model
     $this->endpoint = "/1/cards";
     $this->post();
 
-    var_dump($this->callback);
+    if (empty($this->callback->id) || !$this->callback->valid) {
+      $this->message->warning("Não foi possível validar o cartão");
+      return null;
+    }
+
+    $card = $this->find(
+      "user_id = :user AND hash = :hash",
+      "user={$user->id}&hash={$this->callback->id}"
+    )->fetch();
+
+    if ($card) {
+      $card->cvv = $this->clear($cvv);
+      $card->save();
+      return $card;
+    }
+
+    $this->user_id = $user->id;
+    $this->brand = $this->callbak->brand;
+    $this->last_digits = $this->callback->last_digits;
+    $this->cvv = $this->clear($cvv);
+    $this->hash = $this->callback->id;
+    $this->save();
+
+    return $this;
+  }
+
+  /**
+   * @param strig $amount
+   * @return $this|null
+   */
+  public function transaction(strig $amount): ?AppCreditCard
+  {
+    $this->build = [
+      "payment_method" => "credit_card",
+      "card_id" => $this->hash,
+      "amount" => $this->clear($amount)
+    ];
+
+    $this->endpoint = "/1/transactions";
+    $this->post();
+
+    if (empty($this->callback->status) || $this->callback->status != "paid") {
+      $this->message->warning("Pagamento recusado pela operadora");
+      return null;
+    }
+
+    return $this;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function callback()
+  {
+    return$this->callback;
   }
 
   /**

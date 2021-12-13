@@ -58,14 +58,6 @@ class App extends Controller
       }
     }
 
-    $card = new AppCreditCard();
-    $card->creditCard(
-      $this->user,
-      "5131 0536 4594 9033",
-      "Frederico Santana",
-      "08/2020",
-      "421"
-    );
   }
 
   /**
