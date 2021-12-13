@@ -721,7 +721,7 @@ class App extends Controller
         ->find("user_id = :user AND status != :status", "user={$this->user->id}&status=canceled")
         ->fetch(),
       "orders" => (new AppOrder())
-        ->find()
+        ->find("user_id = :user", "user={$this->user->id}")
         ->order("created_at DESC")
         ->fetch(true),
       "plans" => (new AppPlan())

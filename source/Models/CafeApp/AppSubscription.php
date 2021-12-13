@@ -23,6 +23,40 @@ class AppSubscription extends Model
   }
 
   /**
+   * @param User $user
+   * @param AppPlan $plan
+   * @param AppCreditCard $card
+   * @return $this
+   * @throws \Exception
+   */
+  public function subscribe(User $user, AppPlan $plan, AppCreditCard $card): AppSubscription
+  {
+    $this->user_id = $user->id;
+    $this->plan_id = $plan->id;
+    $this->card_id = $card->id;
+    $this->status = "active";
+    $this->pay_status = "active";
+    $this->started = date("Y-m-d");
+
+    $day = (new \DateTime($this->started))->format("d");
+
+    if ($day <= 28) {
+      $this->due_day = $day;
+      $this->next_due = date("Y-m-d", strtotime("+{$plan->period}"));
+    }else{
+      $due_day = 5;
+      $next_due = date("Y-m-{$due_day}",strtotime("+{$plan->period}"));
+
+      $this->due_day = $due_day;
+      $this->next_due = date("Y-m-d", strtotime($next_due . "+1month"));
+    }
+
+    $this->last_charge = date("Y-m-d");
+    $this->save();
+    return $this;
+  }
+
+  /**
    * @return mixed|Model|null
    */
   public function plan()
