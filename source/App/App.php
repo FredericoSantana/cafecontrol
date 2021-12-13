@@ -9,6 +9,9 @@ use Source\Models\Auth;
 use Source\Models\CafeApp\AppCategory;
 use Source\Models\CafeApp\AppCreditCard;
 use Source\Models\CafeApp\AppInvoice;
+use Source\Models\CafeApp\AppOrder;
+use Source\Models\CafeApp\AppPlan;
+use Source\Models\CafeApp\AppSubscription;
 use Source\Models\CafeApp\AppWallet;
 use Source\Models\Post;
 use Source\Models\Report\Access;
@@ -286,7 +289,7 @@ class App extends Controller
       "invoices" => (new AppInvoice())->find(
         "user_id = :user AND type IN('fixed_income', 'fixed_expense') {$whereWallet}",
         "user={$this->user->id}"
-        )->fetch(true)
+      )->fetch(true)
     ]);
   }
 
@@ -363,7 +366,7 @@ class App extends Controller
       $wallet = (new AppWallet())->find(
         "user_id = :user AND id = :id",
         "user={$this->user->id}&id={$data["wallet"]}"
-        )->fetch();
+      )->fetch();
 
       if ($wallet) {
         $wallet->wallet = filter_var($data["wallet_edit"], FILTER_SANITIZE_STRIPPED);
@@ -636,7 +639,7 @@ class App extends Controller
   public function profile(?array $data): void
   {
     if (!empty($data["update"])) {
-      list($d,$m,$y) = explode("/", $data["datebirth"]);
+      list($d, $m, $y) = explode("/", $data["datebirth"]);
       $user = (new User())->findById($this->user->id);
       $user->first_name = $data["first_name"];
       $user->last_name = $data["last_name"];
@@ -695,10 +698,36 @@ class App extends Controller
       "head" => $head,
       "user" => $this->user,
       "photo" => (
-        $this->user->photo() ?
+      $this->user->photo() ?
         image($this->user->photo, 360, 360) :
         theme("/assets/images/avatar.jpg", CONF_VIEW_APP)
       )
+    ]);
+  }
+
+  public function signature(?array $data): void
+  {
+    $head = $this->seo->render(
+      "Assinatura - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
+
+    echo $this->view->render("signature", [
+      "head" => $head,
+      "subscription" => (new AppSubscription())
+        ->find("user_id = :user AND status != :status", "user={$this->user->id}&status=canceled")
+        ->fetch(),
+      "orders" => (new AppOrder())
+        ->find()
+        ->order("created_at DESC")
+        ->fetch(true),
+      "plans" => (new AppPlan())
+        ->find("status = :status", "status=active")
+        ->order("name, price")
+        ->fetch(true)
     ]);
   }
 
