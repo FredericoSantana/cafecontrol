@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ['head' => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
 <section class="blog_page">
   <header class="blog_page_header">
@@ -34,7 +34,7 @@
     <div class="blog_content container content">
       <div class="blog_articles">
         <?php foreach($blog as $post): ?>
-          <?php $this->insert("blog-list", ["post" => $post]); ?>
+          <?php $v->insert("blog-list", ["post" => $post]); ?>
         <?php endforeach; ?>
       </div>
       <?= $paginator; ?>

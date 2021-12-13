@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
   <article class="optin_page">
     <div class="container content">
@@ -15,7 +15,7 @@
   </article>
 
 <?php if (!empty($track)): ?>
-  <?php $this->start("scripts"); ?>
+  <?php $v->start("scripts"); ?>
   <script></script>
-  <?php $this->end(); ?>
+  <?php $v->end(); ?>
 <?php endif; ?>

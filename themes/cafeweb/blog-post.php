@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ['head' => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
   <article class="post_page">
     <header class="post_page_header">
@@ -54,7 +54,7 @@
 
         <div class="blog_articles">
           <?php foreach($related as $more): ?>
-            <?php $this->insert("blog-list", ["post" => $more]); ?>
+            <?php $v->insert("blog-list", ["post" => $more]); ?>
           <?php endforeach; ?>
         </div>
       </section>
@@ -63,7 +63,7 @@
   </article>
 
 
-<?php $this->start("scripts"); ?>
+<?php $v->start("scripts"); ?>
   <div id="fb-root"></div>
   <script>(function (d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
@@ -75,4 +75,4 @@
     }(document, 'script', 'facebook-jssdk'));</script>
 
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<?php $this->end(); ?>
+<?php $v->end(); ?>

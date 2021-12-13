@@ -42,11 +42,11 @@
 
 <!--CONTENT-->
 <main class="main_content">
-  <?= $this->section("content"); ?>
+  <?= $v->section("content"); ?>
 </main>
 
-<?php if ($this->section("optout")): ?>
-  <?= $this->section("optout"); ?>
+<?php if ($v->section("optout")): ?>
+  <?= $v->section("optout"); ?>
 <?php else: ?>
   <article class="footer_optout">
     <div class="footer_optout_content content">
@@ -102,7 +102,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TPHRBH888B"></script>
 <script src="<?= theme("/assets/scripts.js"); ?>"></script>
 
-<?= $this->section("scripts"); ?>
+<?= $v->section("scripts"); ?>
 
 </body>
 </html>

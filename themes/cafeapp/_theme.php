@@ -60,10 +60,10 @@
             <div class="app_sidebar_user app_widget_title">
                 <span class="user">
                     <?php if (user()->photo()): ?>
-                        <img class="rounded" alt="Robson" title="Robson"
+                        <img class="rounded" alt="<?= user()->first_name; ?>" title="<?= user()->first_name; ?>"
                              src="<?= image(user()->photo, 260, 260); ?>"/>
                     <?php else: ?>
-                        <img class="rounded" alt="Robson" title="Robson"
+                        <img class="rounded" alt="<?= user()->first_name; ?>" title="<?= user()->first_name; ?>"
                              src="<?= theme("/assets/images/avatar.jpg", CONF_VIEW_APP); ?>"/>
                     <?php endif; ?>
                     <span><?= user()->first_name; ?></span>
@@ -81,12 +81,12 @@
                 <?php endif; ?>
             </div>
 
-            <?= $this->insert("views/sidebar"); ?>
+            <?= $v->insert("views/sidebar"); ?>
         </nav>
 
         <main class="app_main">
             <div class="al-center"><?= flash(); ?></div>
-            <?= $this->section("content"); ?>
+            <?= $v->section("content"); ?>
         </main>
     </div>
 
@@ -97,12 +97,12 @@
         </span>
     </footer>
 
-    <?= $this->insert("views/modals"); ?>
+    <?= $v->insert("views/modals"); ?>
 </div>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53658515-18"></script>
 <script src="<?= theme("/assets/scripts.js", CONF_VIEW_APP); ?>"></script>
-<?= $this->section("scripts"); ?>
+<?= $v->section("scripts"); ?>
 
 </body>
 </html>

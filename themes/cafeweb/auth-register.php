@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
 <article class="auth">
     <div class="auth_content container content">

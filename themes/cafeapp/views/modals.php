@@ -7,7 +7,7 @@
         ->order("wallet")
         ->fetch(true);
 
-    $this->insert("views/invoice", [
+    $v->insert("views/invoice", [
         "type" => "income",
         "wallets" => $wallets,
         "categories" => (new \Source\Models\CafeApp\AppCategory())
@@ -16,7 +16,7 @@
             ->fetch(true)
     ]);
 
-    $this->insert("views/invoice", [
+    $v->insert("views/invoice", [
         "type" => "expense",
         "wallets" => $wallets,
         "categories" => (new \Source\Models\CafeApp\AppCategory())

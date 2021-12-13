@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
 <?php if (!empty($subscription)): ?>
     <article class="app_signature app_signature_me radius">
@@ -64,7 +64,7 @@
         </div>
 
         <div class="app_signature_pay_card">
-            <?php $this->insert("views/signature",
+            <?php $v->insert("views/signature",
                 ["plans" => null, "action" => url("/pay/update"), "btn" => "Cadastrar Cartão"]); ?>
         </div>
     </article>
@@ -146,7 +146,7 @@
                 </header>
 
                 <div class="app_signature_pay_card">
-                    <?php $this->insert("views/signature", ["plans" => $plans, "action" => url("/pay/create")]); ?>
+                    <?php $v->insert("views/signature", ["plans" => $plans, "action" => url("/pay/create")]); ?>
                 </div>
             <?php endif; ?>
         </article>

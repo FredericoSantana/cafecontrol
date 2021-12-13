@@ -22,7 +22,7 @@ class View
      */
     public function __construct(string $path = CONF_VIEW_PATH, string $ext = CONF_VIEW_EXT)
     {
-        $this->engine = new Engine($path, $ext);
+        $this->engine = Engine::create($path, $ext);
     }
 
     /**
@@ -30,7 +30,7 @@ class View
      * @param string $path
      * @return View
      */
-    public function path(string $name, string $path = CONF_VIEW_PATH): View
+    public function path(string $name, string $path): View
     {
         $this->engine->addFolder($name, $path);
         return $this;

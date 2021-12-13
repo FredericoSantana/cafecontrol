@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
 <div class="app_main_right" style="margin: 0;">
     <ul class="app_widget_shortcuts">

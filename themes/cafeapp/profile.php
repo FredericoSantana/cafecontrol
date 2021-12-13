@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
 <div class="app_formbox app_widget">
     <form class="app_form" action="<?= url("/app/profile"); ?>" method="post">

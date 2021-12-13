@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
 
   <!--FEATURED-->
   <article class="home_featured">
@@ -102,7 +102,7 @@
       <div class="home_video_modal_box">
         <div class="embed">
           <iframe width="560" height="315"
-                  src="https://www.youtube.com/embed/<?= $this->e($video); ?>?rel=0&amp;showinfo=0"
+                  src="https://www.youtube.com/embed/<?= $v->e($video); ?>?rel=0&amp;showinfo=0"
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
       </div>
@@ -120,7 +120,7 @@
 
       <div class="blog_articles">
         <?php foreach($blog as $post): ?>
-          <?php $this->insert("blog-list", ["post" => $post]); ?>
+          <?php $v->insert("blog-list", ["post" => $post]); ?>
         <?php endforeach; ?>
       </div>
     </div>

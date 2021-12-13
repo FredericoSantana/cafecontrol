@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["head" => $head]); ?>
+<?php $v->layout("_theme"); ?>
     <div class="app_main_box">
         <section class="app_main_left">
             <article class="app_widget">
@@ -16,7 +16,7 @@
                     <div class="app_widget_content">
                         <?php if (!empty($income)): ?>
                             <?php foreach ($income as $incomeItem): ?>
-                                <?= $this->insert("views/balance", ["invoice" => $incomeItem->data()]); ?>
+                                <?= $v->insert("views/balance", ["invoice" => $incomeItem->data()]); ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="message success al-center icon-check-square-o">
@@ -35,7 +35,7 @@
                     <div class="app_widget_content">
                         <?php if (!empty($expense)): ?>
                             <?php foreach ($expense as $expenseItem): ?>
-                                <?= $this->insert("views/balance", ["invoice" => $expenseItem->data()]); ?>
+                                <?= $v->insert("views/balance", ["invoice" => $expenseItem->data()]); ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="message error al-center icon-check-square-o">
@@ -98,7 +98,7 @@
         </section>
     </div>
 
-<?php $this->start("scripts"); ?>
+<?php $v->start("scripts"); ?>
     <script type="text/javascript">
         $(function () {
 
@@ -180,4 +180,4 @@
             });
         });
     </script>
-<?php $this->end(); ?>
+<?php $v->end(); ?>
