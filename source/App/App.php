@@ -341,6 +341,70 @@ class App extends Controller
   }
 
   /**
+   * @param array|null $data
+   */
+  public function wallets(?array $data): void
+  {
+    //Create
+    if (!empty($data["wallet"]) && !empty($data["wallet_name"])) {
+      $wallet = new AppWallet();
+      $wallet->user_id = $this->user->id;
+      $wallet->wallet = filter_var($data["wallet_name"], FILTER_SANITIZE_STRIPPED);
+      $wallet->save();
+
+      echo json_encode(["reload" => true]);
+      return;
+    }
+
+    //Edit
+    if (!empty($data["wallet"]) && !empty($data["wallet_edit"])) {
+      $wallet = (new AppWallet())->find(
+        "user_id = :user AND id = :id",
+        "user={$this->user->id}&id={$data["wallet"]}"
+        )->fetch();
+
+      if ($wallet) {
+        $wallet->wallet = filter_var($data["wallet_edit"], FILTER_SANITIZE_STRIPPED);
+        $wallet->save();
+      }
+      echo json_encode(["wallet_edit" => true]);
+    }
+
+    //Delete
+    if (!empty($data["wallet"]) && !empty($data["wallet_remove"])) {
+      $wallet = (new AppWallet())->find(
+        "user_id = :user AND id = :id",
+        "user={$this->user->id}&id={$data["wallet"]}"
+      )->fetch();
+
+      if ($wallet) {
+        $wallet->destroy();
+        (new Session())->unset("walletfilter");
+      }
+      echo json_encode(["wallet_remove" => true]);
+    }
+
+    $head = $this->seo->render(
+      "Minhas carteiras - " . CONF_SITE_NAME,
+      CONF_SITE_DESC,
+      url(),
+      theme("/assets/images/share.jpg"),
+      false
+    );
+
+    $wallets = (new AppWallet())
+      ->find("user_id = :user", "user={$this->user->id}")
+      ->order("wallet")
+      ->fetch(true);
+
+    echo $this->view->render("wallets", [
+      "head" => $head,
+      "wallets" => $wallets
+    ]);
+
+  }
+
+  /**
    * @param array $data
    */
   public function launch(array $data): void
@@ -375,8 +439,8 @@ class App extends Controller
     $invoice->currency = $data["currency"];
     $invoice->due_at = $data["due_at"];
     $invoice->repeat_when = $data["repeat_when"];
-    $invoice->period = ($data["period"] ?? "month");
-    $invoice->enrollments = ($data["enrollments"] ?? 1);
+    $invoice->period = (!empty($data["period"]) ? $data["period"] : "month");
+    $invoice->enrollments = (!empty($data["enrollments"]) ? $data["enrollments"] : 1);
     $invoice->enrollment_of = 1;
     $invoice->status = ($data["repeat_when"] == "fixed" ? "paid" : $status);
 
