@@ -76,9 +76,10 @@ class Auth extends Model
    * @param string $email
    * @param string $password
    * @param bool $save
+   * @param int $level
    * @return bool
    */
-  public function login(string $email, string $password, bool $save = false): bool
+  public function login(string $email, string $password, bool $save = false, int $level = 1): bool
   {
     if(!is_email($email)) {
       $this->message->warning("O e-mail informado não é válido");
@@ -105,6 +106,11 @@ class Auth extends Model
 
     if (!passwd_verify($password, $user->password)) {
       $this->message->error("A senha informada não confere");
+      return false;
+    }
+
+    if ($user->level < $level) {
+      $this->message->error("Desculpe, mas você não tem permissão para logar-se aqui");
       return false;
     }
 

@@ -19,7 +19,7 @@ p {
     bottom: 0;
 
     padding: 30px 0;
-    overflow-x: scroll;
+    /*overflow-x: scroll;*/
 }
 
 .login_box {
