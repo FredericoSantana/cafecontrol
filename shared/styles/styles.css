@@ -263,3 +263,93 @@
 .icon-square-o:before {
   content: "\e04a";
 }
+.icon-whatsapp:before {
+  content: "\e04b";
+}
+.icon-bug:before {
+  content: "\e04c";
+}
+.icon-paint-brush:before {
+  content: "\e04d";
+}
+.icon-pencil:before {
+  content: "\e04e";
+}
+.icon-reply-all:before {
+  content: "\e04f";
+}
+.icon-retweet:before {
+  content: "\e050";
+}
+.icon-rss-square:before {
+  content: "\e051";
+}
+.icon-share-alt:before {
+  content: "\e052";
+}
+.icon-share-square-o:before {
+  content: "\e053";
+}
+.icon-tags:before {
+  content: "\e054";
+}
+.icon-tag:before {
+  content: "\e055";
+}
+.icon-folder-open:before {
+  content: "\e056";
+}
+.icon-folder:before {
+  content: "\e057";
+}
+.icon-folder-o:before {
+  content: "\e058";
+}
+.icon-folder-open-o:before {
+  content: "\e059";
+}
+.icon-bookmark:before {
+  content: "\e05a";
+}
+.icon-bookmark-o:before {
+  content: "\e05b";
+}
+.icon-asterisk:before {
+  content: "\e05c";
+}
+.icon-at:before {
+  content: "\e05d";
+}
+.icon-trash-o:before {
+  content: "\e05e";
+}
+.icon-trash:before {
+  content: "\e05f";
+}
+.icon-ticket:before {
+  content: "\e060";
+}
+.icon-thumbs-up:before {
+  content: "\e061";
+}
+.icon-thumbs-down:before {
+  content: "\e062";
+}
+.icon-lock:before {
+  content: "\e063";
+}
+.icon-upload:before {
+  content: "\e064";
+}
+.icon-download:before {
+  content: "\e065";
+}
+.icon-camera-retro:before {
+  content: "\e066";
+}
+.icon-camera:before {
+  content: "\e067";
+}
+.icon-cogs:before {
+  content: "\e068";
+}

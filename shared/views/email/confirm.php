@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["title" => "Confirme e ative sua conta no CaféControl"]); ?>
+<?php $v->layout("_theme", ["title" => "Confirme e ative sua conta no CaféControl"]); ?>
 
 <h2>Seja bem-vindo(a) ao CaféControl <?= $first_name; ?>. Vamos confirmar seu cadastro?</h2>
 <p>É importante confirmar seu cadastro para ativar as notificações. Assim podemos enviar a você avisos de vencimentos e

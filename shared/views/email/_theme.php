@@ -45,7 +45,7 @@
     <tr>
         <td>
             <div class="content">
-                <?= $this->section("content"); ?>
+                <?= $v->section("content"); ?>
                 <p>Atenciosamente, equipe <?= CONF_SITE_NAME; ?>.</p>
             </div>
             <div class="footer">

@@ -10,19 +10,23 @@
 
 /*VARIABLES*/
 :root {
+    --font-min: 0.8em;
     --font-small: 0.875em;
     --font-normal: 1em;
     --font-medium: 1.2em;
     --font-large: 1.4em;
+    --font-max: 2em;
 
     --color-default: #555555;
     --color-green: #36BA9B;
     --color-blue: #39AED9;
     --color-yellow: #F5B946;
     --color-red: #D94352;
+    --color-fsphp: #1D2025;
 
     --weight-light: 300;
     --weight-normal: 400;
+    --weight-strong: 600;
     --weight-bold: 700;
     --weight-black: 900;
 
@@ -111,7 +115,6 @@ input:-webkit-autofill {
     margin-right: 0 !important;;
 }
 
-
 /*DEFAULT LOAD*/
 .ajax_load {
     display: none;
@@ -145,6 +148,11 @@ input:-webkit-autofill {
     animation: spin 1.2s linear infinite;
 }
 
+.ajax_load_box_title {
+    margin-top: 15px;
+    font-weight: var(--weight-strong);
+}
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -162,7 +170,6 @@ input:-webkit-autofill {
         transform: rotate(360deg);
     }
 }
-
 
 /*CONTAINER*/
 .content,
@@ -188,12 +195,19 @@ input:-webkit-autofill {
     border-radius: var(--radius-normal);
 }
 
+.rounded {
+    -webkit-border-radius: var(--radius-round);
+    -moz-border-radius: var(--radius-round);
+    border-radius: var(--radius-round);
+}
+
 .box-shadow {
     -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
     -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.3);
 }
 
+/*ALIGN*/
 .al-center {
     text-align: center;
 }
@@ -204,6 +218,27 @@ input:-webkit-autofill {
 
 .al-right {
     text-align: right;
+}
+
+/*DISPLAY*/
+.ds-block {
+    display: block;
+}
+
+.ds-flex {
+    display: flex;
+}
+
+.ds-inblock {
+    display: inline-block;
+}
+
+.ds-inline {
+    display: inline;
+}
+
+.ds-none {
+    display: none;
 }
 
 /*GRADIENTS*/

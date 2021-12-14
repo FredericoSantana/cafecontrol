@@ -1,3 +1,3 @@
-<?php $this->layout("_theme", ["title" => $subject]); ?>
+<?php $v->layout("_theme", ["title" => $subject]); ?>
 
 <?= $message; ?>

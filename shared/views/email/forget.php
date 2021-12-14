@@ -1,4 +1,4 @@
-<?php $this->layout("_theme", ["title" => "Recupere sua senha para acessar o CaféControl"]); ?>
+<?php $v->layout("_theme", ["title" => "Recupere sua senha para acessar o CaféControl"]); ?>
 
 <h2>Perdeu sua senha <?= $first_name; ?>?</h2>
 <p>Você está recebendo este e-mail pois foi solicitado a recuperação de senha no site do CaféControl.</p>
