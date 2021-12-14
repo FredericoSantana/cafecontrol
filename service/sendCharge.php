@@ -56,3 +56,56 @@ if ($chargeNow) {
 
    }
 }
+
+/**
+ * CHARGE OR CANCEL: Assinaturas de 3 dias
+ */
+$chargeDayS = $subscription->find(
+  "pay_status = :status AND next_due + INTERVAL 3 DAY = date(NOW()) AND last_charge != DATE(NOW())","status=active"
+)->fetch(true);
+
+if ($chargeDayS) {
+  foreach ($chargeDayS as $subscribe) {
+    $user = (new \Source\Models\User())->findById($subscribe->user_id);
+    $plan = $subscribe->plan();
+    $card = $subscribe->creditCard();
+    $transaction = $card->transaction($plan->price);
+
+    //charge control
+    $subscribe->last_charge = date("Y-m-d");
+
+    if ($transaction) {
+      /**
+       * CHARGE SUCCESS
+       */
+      $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$plan->period}"));
+      (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
+
+      $subject = "[PAGAMENTO CONFIRMADO] Obrigado por assinar o CaféApp";
+      $body = $view->render("mail", [
+        "subject" => $subject,
+        "message" => "<h3>Obrigado {$user->first_name}!</h3><p>Estamos passando apenas para agradecer você ser um assinante CAféApp {$plan->name}.</p><p>Sua fatura deste mês venceu hoje e já está paga de acordo com o seu plano. Qualquer dúvida estamos a disposição.</p>"
+      ]);
+
+      $email->bootstrap($subject, $body, $user->email, "{$user->first_name} {$user->last_name}")->queue();
+    }else{
+      /**
+       * CHARGE FAIL
+       */
+      $subscribe->status = "canceled";
+      $subscribe->pay_status = "canceled";
+      (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
+
+      $subject = "[ASSINATURA CANCELADA] Sua conta CaféApp agora é FREE";
+      $body = $view->render("mail", [
+        "subject" => $subject,
+        "message" => "<h3>Que pena {$user->first_name} :/</h3><p>Tentamos efetuar mais uma cobrança para a sua assinatura {$plan->name} hoje, mas sem sucesso.</p><p>Como essa já é uma segunda tentativa, infelizmente a sua assinatura foi cancelada. Mas calma, você pode assinar novamente a qualquer momento.</p><p>Continue controlando com os recursos FREE, e assim que quiser basta assinar novamente e voltar de onde parou :)</p>"
+      ]);
+
+      $email->bootstrap($subject, $body, $user->email, "{$user->first_name} {$user->last_name}")->queue();
+    }
+    //Charge Save
+    $subscribe->save();
+
+  }
+}
