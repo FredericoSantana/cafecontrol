@@ -158,7 +158,7 @@ class App extends Controller
 
     //POSTS
 
-    $posts = (new Post())->find()->limit(3)->order("post_at DESC")->fetch(true);
+    $posts = (new Post())->findPost()->limit(3)->order("post_at DESC")->fetch(true);
 
     //END POSTS
 
