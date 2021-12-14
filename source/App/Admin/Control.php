@@ -167,7 +167,24 @@ class Control extends Admin
    */
   public function plans(?array $data): void
   {
+    $plans = (new AppPlan())->find();
+    $pager = new Pager(url("/admin/control/plans/"));
+    $pager->pager($plans->count(), 5, (!empty($data["page"]) ? $data["page"] : 1));
 
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Planos de Assinatura",
+      CONF_SITE_DESC,
+      url("/admin"),
+      url("/admin/assets/images/image.jpg"),
+      false
+    );
+
+    echo $this->view->render("widgets/control/plans", [
+      "app" => "control/plans",
+      "head" => $head,
+      "plans" => $plans->order("status ASC, created_at DESC")->limit($pager->limit())->offset($pager->offset())->fetch(true),
+      "paginator" => $pager->render()
+    ]);
   }
 
   /**
@@ -175,6 +192,75 @@ class Control extends Admin
    */
   public function plan(?array $data): void
   {
+    //Create plan
+    if (!empty($data["action"]) && $data["action"] == "create") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
 
+      $planCreate = new AppPlan();
+      $planCreate->name = $data["name"];
+      $planCreate->period = $data["period"];
+      $planCreate->period_str = $data["period_str"];
+      $planCreate->price = $data["price"];
+      $planCreate->status = $data["status"];
+
+      if (!$planCreate->save()) {
+        $json["message"] = $planCreate->message()->render();
+        echo json_encode($json);
+        return;
+      }
+      //finalização
+      $this->message->success("Plano criado com sucesso. Confira...")->flash();
+      $json["redirect"] = url("/admin/control/plan/{$planCreate->id}");
+      echo json_encode($json);
+      return;
+    }
+
+    //Update Plan
+    if (!empty($data["action"]) && $data["action"] == "update") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $planEdit = (new AppPlan())->findById($data["plan_id"]);
+
+      if ($planEdit) {
+        $this->message->error("Você tentou editar um plano que não existe ou foi removido")->flash();
+        echo json_encode(["redirect" => url("/admin/control/plans")]);
+        return;
+      }
+      
+      var_dump($data);
+      return;
+    }
+
+    //Delete Plan
+    if (!empty($data["action"]) && $data["action"] == "delete") {
+      var_dump($data);
+      return;
+    }
+
+    //Read plan
+    $planEdit = null;
+    if (!empty($data["plan_id"])) {
+      $planId = filter_var($data["plan_id"], FILTER_VALIDATE_INT);
+      $planEdit = (new AppPlan())->findById($planId);
+    }
+
+    if (!empty($data["plan_id"])) {
+      $planId = filter_var($data["plan_id"], FILTER_VALIDATE_INT);
+      $planEdit = (new AppPlan())->findById($planId);
+    }
+
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Gerenciar Plano",
+      CONF_SITE_DESC,
+      url("/admin"),
+      url("/admin/assets/images/image.jpg"),
+      false
+    );
+
+    echo $this->view->render("widgets/control/plan", [
+      "app" => "control/plans",
+      "head" => $head,
+      "plan" => $planEdit,
+      "subscribers" => ($planEdit ? $planEdit->subscribers(null)->count() : null)
+    ]);
   }
 }
