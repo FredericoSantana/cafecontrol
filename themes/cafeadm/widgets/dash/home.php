@@ -94,7 +94,7 @@
 
                 $(".app_dash_home_trafic_list").html(list);
             }, "json");
-        }, 1000 * 3);
+        }, 1000 * 10);
     });
 </script>
 <?php $v->end(); ?>
