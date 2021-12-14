@@ -3,6 +3,7 @@
 namespace Source\Models\CafeApp;
 
 use Source\Core\Model;
+use Source\Models\User;
 
 /**
  * Class AppSubscription
@@ -59,6 +60,14 @@ class AppSubscription extends Model
   /**
    * @return mixed|Model|null
    */
+  public function user()
+  {
+    return (new User())->findById($this->user_id);
+  }
+
+  /**
+   * @return mixed|Model|null
+   */
   public function plan()
   {
     return (new AppPlan())->findById($this->plan_id);
@@ -70,5 +79,41 @@ class AppSubscription extends Model
   public function creditCard()
   {
     return (new AppCreditCard())->findById($this->card_id);
+  }
+
+  /**
+   * @return int
+   */
+  public function recurrence()
+  {
+    $recurrence = 0;
+    $activeSubscribers = $this->find("pay_status = :s", "s=active")->fetch(true);
+
+    if ($activeSubscribers) {
+      foreach ($activeSubscribers as $subscriber) {
+        $recurrence += $subscriber->plan()->price;
+      }
+    }
+
+    return $recurrence;
+  }
+
+  /**
+   * @return int
+   */
+  public function recurrenceMonth()
+  {
+    $recurrence = 0;
+    $activeSubscribers = $this->find(
+      "pay_status = :s AND year(started) = year(now()) AND month(started) = month(now())", "s=active"
+    )->fetch(true);
+
+    if ($activeSubscribers) {
+      foreach ($activeSubscribers as $subscriber) {
+        $recurrence += $subscriber->plan()->price;
+      }
+    }
+
+    return $recurrence;
   }
 }
