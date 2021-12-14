@@ -2,6 +2,8 @@
 
 namespace Source\App\Admin;
 
+use Source\Models\CafeApp\AppCreditCard;
+use Source\Models\CafeApp\AppPlan;
 use Source\Models\CafeApp\AppSubscription;
 use Source\Support\Pager;
 
@@ -96,11 +98,68 @@ class Control extends Admin
   }
 
   /**
-   * @param array|null $data
+   * @param array $data
    */
-  public function subscription(?array $data): void
+  public function subscription(array $data): void
   {
+    //Update Subscription
+    if (!empty($data["action"]) && $data["action"] == "update") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $subscriptionUpdate = (new AppSubscription())->findById($data["id"]);
 
+      if (!$subscriptionUpdate) {
+        $this->message->error("Você tentou atualizar uma assinatura que não existe")->flash();
+        echo json_encode(["redirect" => url("/admin/control/subscriptions")]);
+        return;
+      }
+
+      $subscriptionUpdate->plan_id = $data["plan_id"];
+      $subscriptionUpdate->card_id = $data["card_id"];
+      $subscriptionUpdate->status = $data["status"];
+      $subscriptionUpdate->pay_status = $data["pay_status"];
+      $subscriptionUpdate->due_day = $data["due_day"];
+      $subscriptionUpdate->next_due = date_fmt_back($data["next_due"]);
+      $subscriptionUpdate->last_charge = date_fmt_back($data["last_charge"]);
+
+      if (!$subscriptionUpdate->save()) {
+        $json["message"] = $subscriptionUpdate->message()->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $json["message"] = $this->message->success("Assinatura atualizada com sucesso")->render();
+      echo json_encode($json);
+      return;
+    }
+
+    //Read Subscription
+    $id = filter_var($data["id"], FILTER_VALIDATE_INT);
+    if (!$id) {
+      redirect("/admin/control/subscriptions");
+    }
+
+    $subscription = (new AppSubscription())->findById($id);
+    if (!$subscription) {
+      $this->message->error("Você tentou editar uma assinatura que não existe")->flash();
+      redirect("/admin/control/subscriptions");
+    }
+
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Assinatura " . $subscription->user()->full_name(),
+      CONF_SITE_DESC,
+      url("/admin"),
+      theme("/assets/images/image.jpg", CONF_VIEW_ADMIN),
+      false
+    );
+
+    echo $this->view->render("widgets/control/subscription", [
+      "app" => "control/subscriptions",
+      "head" => $head,
+      "subscription" => $subscription,
+      "plans" => (new AppPlan())->find("status = :status", "status=active")->fetch(true),
+      "cards" => (new AppCreditCard())
+        ->find("user_id = :user", "user={$subscription->user()->id}")->fetch(true)
+    ]);
   }
 
   /**
