@@ -3,6 +3,7 @@
 namespace Source\App\Admin;
 
 use Source\Models\CafeApp\AppSubscription;
+use Source\Support\Pager;
 
 /**
  * Class Control
@@ -53,7 +54,45 @@ class Control extends Admin
    */
   public function subscriptions(?array $data): void
   {
+    //Search redirect
+    if (!empty($data["s"])) {
+      $s = filter_var($data["s"], FILTER_SANITIZE_STRIPPED);
+      echo json_encode(["redirect" => url("/admin/control/subscriptions/{$s}/1")]);
+      return;
+    }
 
+    $search = null;
+    $subscriptions = (new AppSubscription())->find();
+
+    if (!empty($data["search"]) && $data["search"] != "all") {
+      $search = filter_var($data["search"], FILTER_SANITIZE_STRIPPED);
+      $subscriptions = (new AppSubscription())->find(
+        "user_id IN(
+          SELECT id FROM users WHERE MATCH(first_name, last_name, email) AGAINST(:s)
+        )",
+        "s={$search}"
+      );
+    }
+
+    $all = ($search ?? "all");
+    $pager = new Pager(url("/admin/control/subscriptions/{$all}/"));
+    $pager->pager($subscriptions->count(), 12, (!empty($data["page"]) ? $data["page"] : 1));
+
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Assinantes",
+      CONF_SITE_DESC,
+      url("/admin"),
+      theme("/assets/images/image.jpg", CONF_VIEW_ADMIN),
+      false
+    );
+
+    echo $this->view->render("widgets/control/subscriptions", [
+      "app" => "control/subscriptions",
+      "head" => $head,
+      "subscriptions" => $subscriptions->limit($pager->limit())->offset($pager->offset())->fetch(true),
+      "paginator" => $pager->render(),
+      "search" => $search
+    ]);
   }
 
   /**
