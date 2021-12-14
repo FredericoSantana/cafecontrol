@@ -81,6 +81,54 @@ class Pay extends Controller
 
   public function update(array $data): void
   {
+    $user = Auth::user();
+    $subscribe = (new AppSubscription())->find("user_id = :user AND status != :status",
+      "user={$user->id}&status=canceled")->fetch();
 
+    if (!$subscribe) {
+      $json["message"] = $this->message->error("Ooops! Você não tem uma assinatura ativa.")->render();
+      echo json_encode($json);
+      return;
+    }
+
+    if (request_limit("payupdate", 3, 300)) {
+      $json["message"] = $this->message->warning(
+        "Desculpe {$user->first_name}, mas por segurança aguarde pelo menos 5 minutos para tentar outro cartão."
+      )->render();
+      echo json_encode($json);
+      return;
+    }
+
+    $creditCard = new AppCreditCard();
+    $card = $creditCard->creditCard(
+      $user, $data["card_number"], $data["card_holder_name"], $data["card_expiration_date"], $data["card_cvv"]
+    );
+
+    if (!$card) {
+      $json["message"] = $creditCard->message()
+        ->before("Oooops! ")->render();
+      echo json_encode($json);
+      return;
+    }
+
+    $subscribe->card_id = $card->id;
+    $subscribe->save();
+
+    if ($subscribe->status == "past_due") {
+      $transaction = $card->transaction($subscribe->plan()->price);
+      if ($transaction) {
+        $subscribe->status = "active";
+        $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$subscribe->plan()->period}"));
+        $subscribe->last_charge = date("Y-m-d");
+        $subscribe->save();
+
+        $this->message->after(" e a sua assinatura já está regularizada.");
+        (new AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
+      }
+    }
+
+    $this->message->success("Seu meio de pagamente foi atualizado com sucesso")->flash();
+    $json["redirect"] = url("/app/assinatura");
+    echo json_encode($json);
   }
 }
