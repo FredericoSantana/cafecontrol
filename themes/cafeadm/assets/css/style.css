@@ -134,7 +134,7 @@ p {
 .ajax_response {
     position: fixed;
     padding: 20px 20px 0 0;
-    z-index: calc(var(--index-modal) + 2);
+    z-index: 998;
 
     top: 0;
     right: 0;

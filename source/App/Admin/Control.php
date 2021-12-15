@@ -74,6 +74,10 @@ class Control extends Admin
         )",
         "s={$search}"
       );
+      if (!$subscriptions->count()) {
+        $this->message->info("Sua pesquisa não retornou resultados")->flash();
+        redirect("/admin/control/subscriptions");
+      }
     }
 
     $all = ($search ?? "all");

@@ -1,7 +1,7 @@
 <?php $v->layout("_admin"); ?>
 <?php $v->insert("widgets/blog/sidebar.php"); ?>
 
-<div class="mce_upload" style="z-index: 998">
+<div class="mce_upload" style="z-index: 997">
     <div class="mce_upload_box">
         <form class="app_form" action="<?= url("/admin/blog/post"); ?>" method="post" enctype="multipart/form-data">
             <input type="hidden" name="upload" value="true"/>
