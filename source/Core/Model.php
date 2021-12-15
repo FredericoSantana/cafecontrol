@@ -292,6 +292,14 @@ abstract class Model
     return true;
   }
 
+  /**
+   * @return int
+   */
+  public function lastId(): int
+  {
+    return Connect::getInstance()->query("SELECT MAX(id) as maxId FROM {$this->entity}")->fetch()->maxId + 1;
+  }
+
 
   /**
    * @param string $terms
