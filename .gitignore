@@ -125,6 +125,10 @@ themes/cafeapp/assets/scripts.js
 # Cache
 storage/images/cache/*.jpg
 storage/images/cache/*.png
+storage/images/2018/*.png
+storage/images/2018/*.jpg
+storage/images/2021/*.png
+storage/images/2021/*.jpg
 
 #Não sei que diabo é isso
 .DS_Store

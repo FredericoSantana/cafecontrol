@@ -239,10 +239,142 @@ class Blog extends Admin
 
   /**
    * @param array|null $data
+   * @throws \Exception
    */
   public function categories(?array $data): void
   {
+    //Create
+    if (!empty($data["action"]) && $data["action"] == "create") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
 
+      $categoryCreate = new Category();
+      $categoryCreate->title = $data["title"];
+      $categoryCreate->uri = str_slug($categoryCreate->title);
+      $categoryCreate->description = $data["description"];
+
+      //Upload Cover
+      if (!empty($_FILES["cover"])) {
+        $files = $_FILES["cover"];
+        $upload = new Upload();
+        $image = $upload->image($files, $categoryCreate->title);
+
+        if (!$image) {
+          $json["message"] = $upload->message()->render();
+          echo json_encode($json);
+          return;
+        }
+
+        $categoryCreate->cover = $image;
+      }
+
+      if (!$categoryCreate->save()) {
+        $json["message"] = $categoryCreate->message()->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $this->message->success("Categoria criada com sucesso")->flash();
+      $json["redirect"] = url("/admin/blog/category/{$categoryCreate->id}");
+
+      echo json_encode($json);
+      return;
+    }
+
+    //Update
+    if (!empty($data["action"]) && $data["action"] == "update") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $categoryEdit = (new Category())->findById($data["category_id"]);
+
+      if (!$categoryEdit) {
+        $this->message->error("Você tentou editar uma categoria que não existe ou foi removida")->flash();
+        echo json_encode(["redirect" => url("/admin/blog/categories")]);
+        return;
+      }
+
+      $categoryEdit->title = $data["title"];
+      $categoryEdit->uri = str_slug($categoryEdit->title);
+      $categoryEdit->description = $data["description"];
+
+      //Upload Cover
+      if (!empty($_FILES["cover"])) {
+        if ($categoryEdit->cover && file_exists(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$categoryEdit->cover}")) {
+          unlink(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$categoryEdit->cover}");
+          (new Thumb())->flush($categoryEdit->cover);
+        }
+
+        $files = $_FILES["cover"];
+        $upload = new Upload();
+        $image = $upload->image($files, $categoryEdit->title);
+
+        if (!$image) {
+          $json["message"] = $upload->message()->render();
+          echo json_encode($json);
+          return;
+        }
+
+        $categoryEdit->cover = $image;
+      }
+
+      if (!$categoryEdit->save()) {
+        $json["message"] = $categoryEdit->message()->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $this->message->success("Categoria atualizada com sucesso")->flash();
+
+      echo json_encode(["reload" => true]);
+      return;
+    }
+
+    //Delete
+    if (!empty($data["action"]) && $data["action"] == "delete") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $categoryDelete = (new Category())->findById($data["category_id"]);
+
+      if (!$categoryDelete) {
+        $json["message"] = $this->message->error("A categoria não existe ou já foi excluída antes")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      if ($categoryDelete->posts()->count()) {
+        $json["message"] = $this->message->warning("Não é possível remover pois existem posts cadastrados")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      if ($categoryDelete->cover && file_exists(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$categoryDelete->cover}")) {
+        unlink(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$categoryDelete->cover}");
+        (new Thumb())->flush($categoryDelete->cover);
+      }
+
+      $categoryDelete->destroy();
+
+      $this->message->success("A categoria foi excluída com sucesso...")->flash();
+      echo json_encode(["reload" => true]);
+
+      return;
+    }
+
+    $categories = (new Category())->find();
+    $pager = new Pager(url("/admin/blog/categories/"));
+    $pager->pager($categories->count(), 6, (!empty($data["page"]) ? $data["page"] : 1));
+
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Categorias",
+      CONF_SITE_DESC,
+      url("/admin"),
+      url("/admin/assets/images/image.jpg"),
+      false
+    );
+
+    echo $this->view->render("widgets/blog/categories", [
+      "app" => "blog/categories",
+      "head" => $head,
+      "categories" => $categories->order("title")->limit($pager->limit())->offset($pager->offset())->fetch(true),
+      "paginator" => $pager->render()
+    ]);
   }
 
   /**
@@ -250,6 +382,24 @@ class Blog extends Admin
    */
   public function category(?array $data): void
   {
+    $categoryEdit = null;
+    if (!empty($data["category_id"])) {
+      $categoryId = filter_var($data["category_id"], FILTER_VALIDATE_INT);
+      $categoryEdit = (new Category())->findById($categoryId);
+    }
 
+    $head = $this->seo->render(
+      CONF_SITE_NAME . " | Categoria",
+      CONF_SITE_DESC,
+      url("/admin"),
+      url("/admin/assets/images/image.jpg"),
+      false
+    );
+
+    echo $this->view->render("widgets/blog/category", [
+      "app" => "blog/categories",
+      "head" => $head,
+      "category" => $categoryEdit
+    ]);
   }
 }
