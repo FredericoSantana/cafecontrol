@@ -220,19 +220,51 @@ class Control extends Admin
       $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
       $planEdit = (new AppPlan())->findById($data["plan_id"]);
 
-      if ($planEdit) {
+      if (!$planEdit) {
         $this->message->error("Você tentou editar um plano que não existe ou foi removido")->flash();
         echo json_encode(["redirect" => url("/admin/control/plans")]);
         return;
       }
-      
-      var_dump($data);
+
+      $planEdit->name = $data["name"];
+      $planEdit->period = $data["period"];
+      $planEdit->period_str = $data["period_str"];
+      $planEdit->price = $data["price"];
+      $planEdit->status = $data["status"];
+
+      if (!$planEdit->save()) {
+        $json["message"] = $planEdit->message()->render();
+        echo json_encode($json);
+        return;
+      }
+      $json["message"] = $this->message->success("Plano atualizado com sucesso...")->render();
+      echo json_encode($json);
+
       return;
     }
 
     //Delete Plan
     if (!empty($data["action"]) && $data["action"] == "delete") {
-      var_dump($data);
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $planDelete = (new AppPlan())->findById($data["plan_id"]);
+
+      if (!$planDelete) {
+        $this->message->error("Você tentou excluir um plano que não existe ou que já foi removido")->flash();
+        echo json_encode(["redirect" => url("/admin/control/plans")]);
+        return;
+      }
+
+      if ($planDelete->subscribers(null)->count()) {
+        $json["message"] = $this->message->warning("Não é possível remover planos com assinantes...")->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $planDelete->destroy();
+      $this->message->success("Plano removido com sucesso...")->flash();
+      $json["redirect"] = url("/admin/control/plans");
+
+      echo json_encode($json);
       return;
     }
 
