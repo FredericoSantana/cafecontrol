@@ -17,4 +17,12 @@ class Channel extends Model
   {
     parent::__construct("faq_channels", ["id"], ["channel", "description"]);
   }
+
+  /**
+   * @return Question
+   */
+  public function questions(): Question
+  {
+    return (new Question())->find("channel_id = :id", "id={$this->id}");
+  }
 }
