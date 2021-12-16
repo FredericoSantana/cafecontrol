@@ -160,7 +160,7 @@ class CafeApi extends Controller
       fclose($saveCache);
     };
 
-    if (empty($cache[$endpoint]) || $cacheFile[$endpoint]->time <= time()) {
+    if (empty($cache[$endpoint]) || $cache[$endpoint]->time <= time()) {
       if (!$attempt) {
         $cache[$endpoint] = [
           "limit" => $limit,

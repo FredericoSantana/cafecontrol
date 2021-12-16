@@ -132,3 +132,6 @@ storage/images/2021/*.jpg
 
 #Não sei que diabo é isso
 .DS_Store
+
+# Requests
+storage/requests
