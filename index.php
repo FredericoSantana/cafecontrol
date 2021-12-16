@@ -143,6 +143,10 @@ $route->post("/users/user", "Users:user");
 $route->get("/users/user/{user_id}", "Users:user");
 $route->post("/users/user/{user_id}", "Users:user");
 
+//notification center
+$route->post("/notifications/count", "Notifications:count");
+$route->post("/notifications/list", "Notifications:list");
+
 //END ADMIN
 $route->namespace("Source\App");
 
