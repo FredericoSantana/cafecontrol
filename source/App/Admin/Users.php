@@ -103,6 +103,82 @@ class Users extends Admin
       return;
     }
 
+    //update
+    if (!empty($data["action"]) && $data["action"] == "update") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $userUpdate = (new User())->findById($data["user_id"]);
+
+      if (!$userUpdate) {
+        $this->message->error("Você tentou gerenciar um usuário que não existe")->flash();
+        echo json_encode(["redirect" => url("/admin/users/home")]);
+        return;
+      }
+
+      $userUpdate->first_name = $data["first_name"];
+      $userUpdate->last_name = $data["last_name"];
+      $userUpdate->email = $data["email"];
+      $userUpdate->password = (!empty($data["password"]) ? $data["password"] : $userUpdate->password);
+      $userUpdate->level = $data["level"];
+      $userUpdate->genre = $data["genre"];
+      $userUpdate->datebirth = date_fmt_back($data["datebirth"]);
+      $userUpdate->document = preg_replace("/[^0-9]/", "", $data["document"]);
+      $userUpdate->status = $data["status"];
+
+      //upload photo
+      if (!empty($_FILES["photo"])) {
+        if ($userUpdate->photo && file_exists(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$userUpdate->photo}")) {
+          unlink(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$userUpdate->photo}");
+          (new Thumb())->flush($userUpdate->photo);
+        }
+
+        $files = $_FILES["photo"];
+        $upload = new Upload();
+        $image = $upload->image($files, $userUpdate->fullName(), 600);
+
+        if (!$image) {
+          $json["message"] = $upload->message()->render();
+          echo json_encode($json);
+          return;
+        }
+
+        $userUpdate->photo = $image;
+      }
+
+      if (!$userUpdate->save()) {
+        $json["message"] = $userUpdate->message()->render();
+        echo json_encode($json);
+        return;
+      }
+
+      $this->message->success("Usuário atualizado com sucesso...")->flash();
+      echo json_encode(["reload" => true]);
+      return;
+    }
+
+    //delete
+    if (!empty($data["action"]) && $data["action"] == "delete") {
+      $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+      $userDelete = (new User())->findById($data["user_id"]);
+
+      if (!$userDelete) {
+        $this->message->error("Você tentnou deletar um usuário que não existe")->flash();
+        echo json_encode(["redirect" => url("/admin/users/home")]);
+        return;
+      }
+
+      if ($userDelete->photo && file_exists(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$userDelete->photo}")) {
+        unlink(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$userDelete->photo}");
+        (new Thumb())->flush($userDelete->photo);
+      }
+
+      $userDelete->destroy();
+
+      $this->message->success("O usuário foi excluído com sucesso...")->flash();
+      echo json_encode(["redirect" => url("/admin/users/home")]);
+
+      return;
+    }
+
     $userEdit = null;
     if (!empty($data["user_id"])) {
       $userId = filter_var($data["user_id"], FILTER_VALIDATE_INT);
@@ -110,7 +186,7 @@ class Users extends Admin
     }
 
     $head = $this->seo->render(
-      CONF_SITE_NAME . " | " . ($userEdit ? "Perfil de {$userEdit->fullName()}" : "Novo Usuário"),
+      CONF_SITE_NAME . " | Usuários",
       CONF_SITE_DESC,
       url("/admin"),
       url("/admin/assets/images/image.jpg"),
