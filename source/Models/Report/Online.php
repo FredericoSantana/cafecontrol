@@ -8,14 +8,15 @@ use Source\Models\User;
 
 /**
  * Class Online
- * @package Source\Model\Report
+ * @package Source\Models\Report
  */
 class Online extends Model
 {
   /** @var int */
-  private int $sessionTime;
+  private $sessionTime;
 
   /**
+   * Online constructor.
    * @param int $sessionTime
    */
   public function __construct(int $sessionTime = 20)
@@ -40,6 +41,7 @@ class Online extends Model
   }
 
   /**
+   * @param bool $clear
    * @return Online
    */
   public function report(bool $clear = true): Online
@@ -65,7 +67,6 @@ class Online extends Model
     }
 
     $find = $this->findById($session->online);
-
     if (!$find) {
       $session->unset("online");
       return $this;
@@ -82,7 +83,7 @@ class Online extends Model
   /**
    * CLEAR ONLINE
    */
-  public function clear(): void
+  private function clear()
   {
     $this->delete("updated_at <= NOW() - INTERVAL {$this->sessionTime} MINUTE", null);
   }

@@ -53,7 +53,8 @@
             <img alt="Controle e relatórios" title="Controle e relatórios"
                  src="<?= theme("/assets/images/home_control.jpg"); ?>"/>
             <h3>Controle e relatórios</h3>
-            <p>Contas e recebíveis cadastrados? Pronto, agora você tem tudo controlado enquanto toma um bom café
+            <p>Contas e recebíveis cadastrados? Pronto, agora você tem tudo controlado enquanto toma um bom
+              café
               e acompanha os relatórios. É gratuito!</p>
           </header>
         </article>
@@ -66,7 +67,8 @@
     <div class="home_optin_content container content">
       <header class="home_optin_content_flex">
         <h2>Cadastre-se no CaféControl e comece a controlar suas contas hoje mesmo</h2>
-        <p>Receber e pagar é uma tarefa comum do dia a dia, o CafeControl é um gerenciador de contas simples, fácil
+        <p>Receber e pagar é uma tarefa comum do dia a dia, o CafeControl é um gerenciador de contas simples,
+          fácil
           e gratuito para ajudar você nessa tarefa.</p>
         <p>Com ele você lança suas contas, cria recorrências e conta com atuomações e relatórios poderosos que
           controlam tudo enquanto você toma um bom café.</p>
@@ -102,7 +104,7 @@
       <div class="home_video_modal_box">
         <div class="embed">
           <iframe width="560" height="315"
-                  src="https://www.youtube.com/embed/<?= $v->e($video); ?>?rel=0&amp;showinfo=0"
+                  src="https://www.youtube.com/embed/<?= $video; ?>?rel=0&amp;showinfo=0"
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
       </div>
@@ -110,7 +112,17 @@
   </article>
 
   <!--BLOG-->
-<?php if (!empty($blog)): ?>
+<?php if (empty($blog)): ?>
+  <div class="content content">
+    <div class="empty_content">
+      <img class="empty_content_cover" title="Empty Content" alt="Empty Content"
+           src="<?= theme("/assets/images/empty-content.jpg"); ?>"/>
+      <h3 class="empty_content_title">Estamos trabalhando aqui</h3>
+      <p class="empty_content_desc">Em breve você terá dicas e sacadas sobre como controlar melhor suas contas
+        :)</p>
+    </div>
+  </div>
+<?php else: ?>
   <section class="blog">
     <div class="blog_content container content">
       <header class="blog_header">
@@ -119,7 +131,7 @@
       </header>
 
       <div class="blog_articles">
-        <?php foreach($blog as $post): ?>
+        <?php foreach ($blog as $post): ?>
           <?php $v->insert("blog-list", ["post" => $post]); ?>
         <?php endforeach; ?>
       </div>

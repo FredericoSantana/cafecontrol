@@ -2,8 +2,8 @@
 
 namespace Source\Support;
 
-use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 use Source\Core\Connect;
 
 /**
@@ -125,10 +125,11 @@ class Email
   {
     try {
       $stmt = Connect::getInstance()->prepare(
-        "INSERT 
-                     INTO mail_queue (subject, body, from_email, from_name, recipient_email, recipient_name)
-                   VALUES (:subject, :body, :from_email, :from_name, :recipient_email, :recipient_name)"
+        "INSERT INTO
+                    mail_queue (subject, body, from_email, from_name, recipient_email, recipient_name)
+                    VALUES (:subject, :body, :from_email, :from_name, :recipient_email, :recipient_name)"
       );
+
       $stmt->bindValue(":subject", $this->data->subject, \PDO::PARAM_STR);
       $stmt->bindValue(":body", $this->data->body, \PDO::PARAM_STR);
       $stmt->bindValue(":from_email", $from, \PDO::PARAM_STR);
@@ -150,7 +151,6 @@ class Email
   public function sendQueue(int $perSecond = 5)
   {
     $stmt = Connect::getInstance()->query("SELECT * FROM mail_queue WHERE sent_at IS NULL");
-
     if ($stmt->rowCount()) {
       foreach ($stmt->fetchAll() as $send) {
         $email = $this->bootstrap(
@@ -183,5 +183,4 @@ class Email
   {
     return $this->message;
   }
-
 }

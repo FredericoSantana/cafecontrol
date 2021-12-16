@@ -2,8 +2,11 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="mit" content="2019-09-05T13:56:10-03:00+28440">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <?= $head; ?>
+
   <link rel="icon" type="image/png" href="<?= theme("/assets/images/favicon.png"); ?>"/>
   <link rel="stylesheet" href="<?= theme("/assets/style.css"); ?>"/>
 </head>
@@ -30,10 +33,13 @@
         <a class="link transition radius" title="Home" href="<?= url(); ?>">Home</a>
         <a class="link transition radius" title="Sobre" href="<?= url("/sobre"); ?>">Sobre</a>
         <a class="link transition radius" title="Blog" href="<?= url("/blog"); ?>">Blog</a>
+
         <?php if (\Source\Models\Auth::user()): ?>
-          <a class="link login transition radius icon-coffee" title="Controlar" href="<?= url("/app"); ?>">Controlar</a>
+          <a class="link login transition radius icon-coffee" title="Controlar"
+             href="<?= url("/app"); ?>">Controlar</a>
         <?php else: ?>
-          <a class="link login transition radius icon-sign-in" title="Entrar" href="<?= url("/entrar"); ?>">Entrar</a>
+          <a class="link login transition radius icon-sign-in" title="Entrar"
+             href="<?= url("/entrar"); ?>">Entrar</a>
         <?php endif; ?>
       </div>
     </nav>
@@ -101,7 +107,6 @@
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TPHRBH888B"></script>
 <script src="<?= theme("/assets/scripts.js"); ?>"></script>
-
 <?= $v->section("scripts"); ?>
 
 </body>

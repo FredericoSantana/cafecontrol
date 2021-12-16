@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Source\App\Admin;
 
 use Source\Models\User;
@@ -8,18 +7,28 @@ use Source\Support\Pager;
 use Source\Support\Thumb;
 use Source\Support\Upload;
 
+/**
+ * Class Users
+ * @package Source\App\Admin
+ */
 class Users extends Admin
 {
+  /**
+   * Users constructor.
+   */
   public function __construct()
   {
     parent::__construct();
   }
 
+  /**
+   * @param array|null $data
+   */
   public function home(?array $data): void
   {
     //search redirect
     if (!empty($data["s"])) {
-      $s = filter_var($data["s"], FILTER_SANITIZE_STRIPPED);
+      $s = str_search($data["s"]);
       echo json_encode(["redirect" => url("/admin/users/home/{$s}/1")]);
       return;
     }
@@ -27,8 +36,8 @@ class Users extends Admin
     $search = null;
     $users = (new User())->find();
 
-    if (!empty($data["search"]) && $data["search"] != "all") {
-      $search = filter_var($data["search"], FILTER_SANITIZE_STRIPPED);
+    if (!empty($data["search"]) && str_search($data["search"]) != "all") {
+      $search = str_search($data["search"]);
       $users = (new User())->find("MATCH(first_name, last_name, email) AGAINST(:s)", "s={$search}");
       if (!$users->count()) {
         $this->message->info("Sua pesquisa não retornou resultados")->flash();
@@ -39,7 +48,6 @@ class Users extends Admin
     $all = ($search ?? "all");
     $pager = new Pager(url("/admin/users/home/{$all}/"));
     $pager->pager($users->count(), 12, (!empty($data["page"]) ? $data["page"] : 1));
-
 
     $head = $this->seo->render(
       CONF_SITE_NAME . " | Usuários",
@@ -58,6 +66,10 @@ class Users extends Admin
     ]);
   }
 
+  /**
+   * @param array|null $data
+   * @throws \Exception
+   */
   public function user(?array $data): void
   {
     //create
@@ -186,7 +198,7 @@ class Users extends Admin
     }
 
     $head = $this->seo->render(
-      CONF_SITE_NAME . " | Usuários",
+      CONF_SITE_NAME . " | " . ($userEdit ? "Perfil de {$userEdit->fullName()}" : "Novo Usuário"),
       CONF_SITE_DESC,
       url("/admin"),
       url("/admin/assets/images/image.jpg"),

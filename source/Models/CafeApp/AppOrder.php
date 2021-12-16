@@ -25,7 +25,7 @@ class AppOrder extends Model
    * @param AppCreditCard $card
    * @param AppSubscription $sub
    * @param AppCreditCard $tr
-   * @return $this
+   * @return AppOrder
    */
   public function byCreditCard(User $user, AppCreditCard $card, AppSubscription $sub, AppCreditCard $tr): AppOrder
   {
@@ -33,10 +33,9 @@ class AppOrder extends Model
     $this->card_id = $card->id;
     $this->subscription_id = $sub->id;
     $this->transaction = $tr->callback()->tid;
-    $this->amount = number_format($tr->callback()->amount / 100, 2,",",".");
+    $this->amount = number_format($tr->callback()->amount / 100, 2, ",", ".");
     $this->status = $tr->callback()->status;
     $this->save();
-
     return $this;
   }
 

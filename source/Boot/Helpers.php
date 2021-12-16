@@ -1,10 +1,10 @@
 <?php
+
 /**
  * ####################
  * ###   VALIDATE   ###
  * ####################
  */
-
 
 /**
  * @param string $email
@@ -28,13 +28,11 @@ function is_passwd(string $password): bool
   return false;
 }
 
-
 /**
  * ##################
  * ###   STRING   ###
  * ##################
  */
-
 
 /**
  * @param string $string
@@ -143,13 +141,25 @@ function str_price(?string $price): string
   return number_format((!empty($price) ? $price : 0), 2, ",", ".");
 }
 
+/**
+ * @param string|null $search
+ * @return string
+ */
+function str_search(?string $search): string
+{
+  if (!$search) {
+    return "all";
+  }
+
+  $search = preg_replace("/[^a-z0-9A-Z\@\ ]/", "", $search);
+  return (!empty($search) ? $search : "all");
+}
 
 /**
  * ###############
  * ###   URL   ###
  * ###############
  */
-
 
 /**
  * @param string|null $path
@@ -197,13 +207,11 @@ function redirect(string $url): void
   }
 }
 
-
 /**
  * ##################
  * ###   ASSETS   ###
  * ##################
  */
-
 
 /**
  * @return \Source\Models\User|null
@@ -239,7 +247,7 @@ function theme(string $path = null, string $theme = CONF_VIEW_THEME): string
     return CONF_URL_BASE . "/themes/{$theme}/" . ($path[0] == "/" ? mb_substr($path, 1) : $path);
   }
 
-  return CONF_URL_BASE . "/themes/{$theme}/";
+  return CONF_URL_BASE . "/themes/{$theme}";
 }
 
 /**
@@ -253,6 +261,7 @@ function image(?string $image, int $width, int $height = null): ?string
   if ($image) {
     return url() . "/" . (new \Source\Support\Thumb())->make($image, $width, $height);
   }
+
   return null;
 }
 
@@ -314,7 +323,6 @@ function date_fmt_back(?string $date): ?string
   return implode("-", array_reverse(explode("/", $date)));
 }
 
-
 /**
  * ####################
  * ###   PASSWORD   ###
@@ -330,6 +338,7 @@ function passwd(string $password): string
   if (!empty(password_get_info($password)['algo'])) {
     return $password;
   }
+
   return password_hash($password, CONF_PASSWD_ALGO, CONF_PASSWD_OPTION);
 }
 
@@ -382,15 +391,14 @@ function csrf_verify($request): bool
 }
 
 /**
- * @return string|null
+ * @return null|string
  */
 function flash(): ?string
 {
   $session = new \Source\Core\Session();
   if ($flash = $session->flash()) {
-    echo $flash;
+    return $flash;
   }
-
   return null;
 }
 
@@ -431,12 +439,10 @@ function request_limit(string $key, int $limit = 5, int $seconds = 60): bool
 function request_repeat(string $field, string $value): bool
 {
   $session = new \Source\Core\Session();
-
   if ($session->has($field) && $session->$field == $value) {
     return true;
   }
 
   $session->set($field, $value);
-
   return false;
 }

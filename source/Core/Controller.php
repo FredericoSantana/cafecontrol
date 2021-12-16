@@ -23,11 +23,12 @@ class Controller
   protected $message;
 
   /**
-   * @param string|null $pathToView
+   * Controller constructor.
+   * @param string|null $pathToViews
    */
-  public function __construct(string $pathToView = null)
+  public function __construct(string $pathToViews = null)
   {
-    $this->view = new View($pathToView);
+    $this->view = new View($pathToViews);
     $this->seo = new Seo();
     $this->message = new Message();
   }

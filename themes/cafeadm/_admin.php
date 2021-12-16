@@ -32,7 +32,7 @@
       ?>
       <div><img class="dash_sidebar_user_thumb" src="<?= $userPhoto; ?>" alt="" title=""/></div>
       <h3 class="dash_sidebar_user_name">
-        <a href="<?= url("/admin/users/user/" . user()->id); ?>"><?= user()->full_name(); ?></a>
+        <a href="<?= url("/admin/users/user/" . user()->id); ?>"><?= user()->fullName(); ?></a>
       </h3>
     </article>
 
@@ -71,10 +71,7 @@
         </div>
       </div>
 
-      <div class="notification_center">
-
-      </div>
-
+      <div class="notification_center"></div>
     </div>
 
     <div class="dash_content_box">

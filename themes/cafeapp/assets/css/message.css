@@ -55,6 +55,6 @@ form .message {
     transition-duration: 0.2s;
 }
 
-.message_btn:hover{
+.message_btn:hover {
     opacity: 1;
 }

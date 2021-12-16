@@ -1056,15 +1056,15 @@ body {
     margin: 0 auto;
 }
 
-.auth_form_label{
+.auth_form_label {
     display: flex;
 }
 
-.auth_form_label label{
+.auth_form_label label {
     width: calc(50% - 10px);
 }
 
-.auth_form_label label:last-of-type{
+.auth_form_label label:last-of-type {
     margin-left: 20px;
 }
 

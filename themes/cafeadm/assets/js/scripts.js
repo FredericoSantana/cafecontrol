@@ -40,8 +40,8 @@ $(function () {
       '        <img class="rounded" src="' + image + '"/>\n' +
       '    </div>\n' +
       '    <div class="info">\n' +
-      '       <p class="title">' + notify + '</p>\n' +
-      '       <p class="time icon-clock-o">' + date + '</p>\n' +
+      '        <p class="title">' + notify + '</p>\n' +
+      '        <p class="time icon-clock-o">' + date + '</p>\n' +
       '    </div>\n' +
       '</div>';
   }

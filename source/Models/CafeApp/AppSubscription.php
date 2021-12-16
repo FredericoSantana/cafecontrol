@@ -16,18 +16,15 @@ class AppSubscription extends Model
    */
   public function __construct()
   {
-    parent::__construct(
-      "app_subscriptions",
-      ["id"],
-      ["user_id", "plan_id", "status", "pay_status", "started", "due_day", "next_due"]
-    );
+    parent::__construct("app_subscriptions", ["id"],
+      ["user_id", "plan_id", "card_id", "status", "pay_status", "started", "due_day", "next_due"]);
   }
 
   /**
    * @param User $user
    * @param AppPlan $plan
    * @param AppCreditCard $card
-   * @return $this
+   * @return AppSubscription
    * @throws \Exception
    */
   public function subscribe(User $user, AppPlan $plan, AppCreditCard $card): AppSubscription
@@ -44,9 +41,9 @@ class AppSubscription extends Model
     if ($day <= 28) {
       $this->due_day = $day;
       $this->next_due = date("Y-m-d", strtotime("+{$plan->period}"));
-    }else{
+    } else {
       $due_day = 5;
-      $next_due = date("Y-m-{$due_day}",strtotime("+{$plan->period}"));
+      $next_due = date("Y-m-{$due_day}", strtotime("+{$plan->period}"));
 
       $this->due_day = $due_day;
       $this->next_due = date("Y-m-d", strtotime($next_due . "+1month"));
@@ -104,9 +101,8 @@ class AppSubscription extends Model
   public function recurrenceMonth()
   {
     $recurrence = 0;
-    $activeSubscribers = $this->find(
-      "pay_status = :s AND year(started) = year(now()) AND month(started) = month(now())", "s=active"
-    )->fetch(true);
+    $activeSubscribers = $this->find("pay_status = :s AND year(started) = year(now()) AND month(started) = month(now())",
+      "s=active")->fetch(true);
 
     if ($activeSubscribers) {
       foreach ($activeSubscribers as $subscriber) {

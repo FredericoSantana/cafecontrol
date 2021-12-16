@@ -15,28 +15,27 @@ class Post extends Model
    */
   public function __construct()
   {
-    parent::__construct("posts", ["id"], ["title", "id", "subtitle", "content"]);
+    parent::__construct("posts", ["id"], ["title", "uri", "subtitle", "content"]);
   }
 
   /**
-   * @param string|null $terms
-   * @param string|null $params
+   * @param null|string $terms
+   * @param null|string $params
    * @param string $columns
-   * @return Model
+   * @return mixed|Model
    */
-  public function findPost(?string $terms = null, ?string $params = null, string $columns = "*"): Model
+  public function findPost(?string $terms = null, ?string $params = null, string $columns = "*")
   {
-    if (!$this->all) {
-      $terms = "status = :status AND post_at <= NOW()" . ($terms ? " AND {$terms}" : "");
-      $params = "status=post" . ($params ? "&{$params}" : "");
-    }
+    $terms = "status = :status AND post_at <= NOW()" . ($terms ? " AND {$terms}" : "");
+    $params = "status=post" . ($params ? "&{$params}" : "");
+
     return parent::find($terms, $params, $columns);
   }
 
   /**
    * @param string $uri
    * @param string $columns
-   * @return Post|null
+   * @return null|Post
    */
   public function findByUri(string $uri, string $columns = "*"): ?Post
   {
@@ -45,7 +44,7 @@ class Post extends Model
   }
 
   /**
-   * @return User|null
+   * @return null|User
    */
   public function author(): ?User
   {
@@ -56,7 +55,7 @@ class Post extends Model
   }
 
   /**
-   * @return Category|null
+   * @return null|Category
    */
   public function category(): ?Category
   {

@@ -24,7 +24,7 @@ class AppCreditCard extends Model
   private array $build;
 
   /** @var string */
-  private string $callback;
+  private $callback;
 
   /**
    * AppCreditCard constructor.
@@ -34,10 +34,9 @@ class AppCreditCard extends Model
     parent::__construct("app_credit_cards", ["id"], ["user_id", "brand", "last_digits", "cvv", "hash"]);
 
     $this->apiurl = "https://api.pagar.me";
-
     if (CONF_PAGARME_MODE == "live") {
       $this->apikey = CONF_PAGARME_LIVE;
-    }else{
+    } else {
       $this->apikey = CONF_PAGARME_TEST;
     }
   }
@@ -54,11 +53,11 @@ class AppCreditCard extends Model
   {
     $this->build = [
       "card_number" => $this->clear($number),
-      "card_holder_name" =>filter_var($name, FILTER_SANITIZE_STRIPPED),
+      "card_holder_name" => filter_var($name, FILTER_SANITIZE_STRIPPED),
       "card_expiration_date" => $this->clear($expDate),
       "card_cvv" => $this->clear($cvv)
     ];
-    
+
     $this->endpoint = "/1/cards";
     $this->post();
 
@@ -67,10 +66,8 @@ class AppCreditCard extends Model
       return null;
     }
 
-    $card = $this->find(
-      "user_id = :user AND hash = :hash",
-      "user={$user->id}&hash={$this->callback->id}"
-    )->fetch();
+    $card = $this->find("user_id = :user AND hash = :hash",
+      "user={$user->id}&hash={$this->callback->id}")->fetch();
 
     if ($card) {
       $card->cvv = $this->clear($cvv);
@@ -79,7 +76,7 @@ class AppCreditCard extends Model
     }
 
     $this->user_id = $user->id;
-    $this->brand = $this->callbak->brand;
+    $this->brand = $this->callback->brand;
     $this->last_digits = $this->callback->last_digits;
     $this->cvv = $this->clear($cvv);
     $this->hash = $this->callback->id;
@@ -89,10 +86,10 @@ class AppCreditCard extends Model
   }
 
   /**
-   * @param strig $amount
-   * @return $this|null
+   * @param string $amount
+   * @return AppCreditCard|null
    */
-  public function transaction(strig $amount): ?AppCreditCard
+  public function transaction(string $amount): ?AppCreditCard
   {
     $this->build = [
       "payment_method" => "credit_card",
@@ -116,7 +113,7 @@ class AppCreditCard extends Model
    */
   public function callback()
   {
-    return$this->callback;
+    return $this->callback;
   }
 
   /**

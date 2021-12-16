@@ -16,11 +16,9 @@
     <div class="content content">
       <div class="empty_content">
         <h3 class="empty_content_title">Sua pesquisa não retornou resultados :/</h3>
-        <p class="empty_content_desc">Você pesquuisou por <b><?= $search; ?></b>. Tente outros termos.</p>
-        <a href="<?= url("/blog"); ?>" title="Blog"
-           class="empty_content_btn gradient gradient-green gradient-hover radius">
-          ... ou volte ao blog
-        </a>
+        <p class="empty_content_desc">Você pesquisou por <b><?= $search; ?></b>. Tente outros termos.</p>
+        <a class="empty_content_btn gradient gradient-green gradient-hover radius"
+           href="<?= url("/blog"); ?>" title="Blog">...ou volte ao blog</a>
       </div>
     </div>
   <?php elseif (empty($blog)): ?>
@@ -33,10 +31,11 @@
   <?php else: ?>
     <div class="blog_content container content">
       <div class="blog_articles">
-        <?php foreach($blog as $post): ?>
+        <?php foreach ($blog as $post): ?>
           <?php $v->insert("blog-list", ["post" => $post]); ?>
         <?php endforeach; ?>
       </div>
+
       <?= $paginator; ?>
     </div>
   <?php endif; ?>

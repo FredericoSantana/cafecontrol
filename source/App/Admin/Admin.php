@@ -4,7 +4,6 @@ namespace Source\App\Admin;
 
 use Source\Core\Controller;
 use Source\Models\Auth;
-use Source\Models\User;
 
 /**
  * Class Admin
@@ -12,7 +11,9 @@ use Source\Models\User;
  */
 class Admin extends Controller
 {
-  /** @var User|null */
+  /**
+   * @var \Source\Models\User|null
+   */
   protected $user;
 
   /**

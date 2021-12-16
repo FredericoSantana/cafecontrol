@@ -26,7 +26,6 @@ class Control extends Admin
    */
   public function home(): void
   {
-
     $head = $this->seo->render(
       CONF_SITE_NAME . " | Control",
       CONF_SITE_DESC,
@@ -40,10 +39,8 @@ class Control extends Admin
       "head" => $head,
       "stats" => (object)[
         "subscriptions" => (new AppSubscription())->find("pay_status = :s", "s=active")->count(),
-        "subscriptionsMonth" => (new AppSubscription())->find(
-          "pay_status = :s AND year(started) = year(now()) AND month(started) = month(now())",
-          "s=active"
-        )->count(),
+        "subscriptionsMonth" => (new AppSubscription())->find("pay_status = :s AND year(started) = year(now()) AND month(started) = month(now())",
+          "s=active")->count(),
         "recurrence" => (new AppSubscription())->recurrence(),
         "recurrenceMonth" => (new AppSubscription())->recurrenceMonth()
       ],
@@ -58,7 +55,7 @@ class Control extends Admin
   {
     //Search redirect
     if (!empty($data["s"])) {
-      $s = filter_var($data["s"], FILTER_SANITIZE_STRIPPED);
+      $s = str_search($data["s"]);
       echo json_encode(["redirect" => url("/admin/control/subscriptions/{$s}/1")]);
       return;
     }
@@ -66,14 +63,10 @@ class Control extends Admin
     $search = null;
     $subscriptions = (new AppSubscription())->find();
 
-    if (!empty($data["search"]) && $data["search"] != "all") {
-      $search = filter_var($data["search"], FILTER_SANITIZE_STRIPPED);
-      $subscriptions = (new AppSubscription())->find(
-        "user_id IN(
-          SELECT id FROM users WHERE MATCH(first_name, last_name, email) AGAINST(:s)
-        )",
-        "s={$search}"
-      );
+    if (!empty($data["search"]) && str_search($data["search"]) != "all") {
+      $search = str_search($data["search"]);
+      $subscriptions = (new AppSubscription())->find("user_id IN(SELECT id FROM users WHERE MATCH(first_name, last_name, email) AGAINST(:s))",
+        "s={$search}");
       if (!$subscriptions->count()) {
         $this->message->info("Sua pesquisa não retornou resultados")->flash();
         redirect("/admin/control/subscriptions");
@@ -149,7 +142,7 @@ class Control extends Admin
     }
 
     $head = $this->seo->render(
-      CONF_SITE_NAME . " | Assinatura " . $subscription->user()->full_name(),
+      CONF_SITE_NAME . " | Assinatura de " . $subscription->user()->fullName(),
       CONF_SITE_DESC,
       url("/admin"),
       theme("/assets/images/image.jpg", CONF_VIEW_ADMIN),
@@ -161,8 +154,7 @@ class Control extends Admin
       "head" => $head,
       "subscription" => $subscription,
       "plans" => (new AppPlan())->find("status = :status", "status=active")->fetch(true),
-      "cards" => (new AppCreditCard())
-        ->find("user_id = :user", "user={$subscription->user()->id}")->fetch(true)
+      "cards" => (new AppCreditCard())->find("user_id = :user", "user={$subscription->user()->id}")->fetch(true)
     ]);
   }
 
@@ -212,9 +204,10 @@ class Control extends Admin
         echo json_encode($json);
         return;
       }
-      //finalização
+
       $this->message->success("Plano criado com sucesso. Confira...")->flash();
       $json["redirect"] = url("/admin/control/plan/{$planCreate->id}");
+
       echo json_encode($json);
       return;
     }
@@ -241,6 +234,7 @@ class Control extends Admin
         echo json_encode($json);
         return;
       }
+
       $json["message"] = $this->message->success("Plano atualizado com sucesso...")->render();
       echo json_encode($json);
 
@@ -253,13 +247,13 @@ class Control extends Admin
       $planDelete = (new AppPlan())->findById($data["plan_id"]);
 
       if (!$planDelete) {
-        $this->message->error("Você tentou excluir um plano que não existe ou que já foi removido")->flash();
+        $this->message->error("Você tentou excluir um plano que não existe ou já foi removido")->flash();
         echo json_encode(["redirect" => url("/admin/control/plans")]);
         return;
       }
 
       if ($planDelete->subscribers(null)->count()) {
-        $json["message"] = $this->message->warning("Não é possível remover planos com assinantes...")->render();
+        $json["message"] = $this->message->warning("Não é possível remover planos com assinaturas...")->render();
         echo json_encode($json);
         return;
       }
@@ -274,11 +268,6 @@ class Control extends Admin
 
     //Read plan
     $planEdit = null;
-    if (!empty($data["plan_id"])) {
-      $planId = filter_var($data["plan_id"], FILTER_VALIDATE_INT);
-      $planEdit = (new AppPlan())->findById($planId);
-    }
-
     if (!empty($data["plan_id"])) {
       $planId = filter_var($data["plan_id"], FILTER_VALIDATE_INT);
       $planEdit = (new AppPlan())->findById($planId);

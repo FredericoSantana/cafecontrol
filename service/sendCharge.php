@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . "/../vendor/autoload.php";
 
 $subscription = new \Source\Models\CafeApp\AppSubscription();
@@ -8,26 +9,26 @@ $view = new \Source\Core\View(__DIR__ . "/../shared/views/email");
 /**
  * CHARGE OR PAST DUE: Assinaturas de hoje
  */
-$chargeNow = $subscription->find(
-  "pay_status = :status AND next_due = date(NOW()) AND last_charge != DATE(NOW())","status=active"
-  )->fetch(true);
+$chargeNow = $subscription->find("pay_status = :status AND next_due = date(NOW()) AND last_charge != DATE(NOW())",
+    "status=active")->fetch(true);
 
 if ($chargeNow) {
-  foreach ($chargeNow as $subscribe) {
-    $user = (new \Source\Models\User())->findById($subscribe->user_id);
-    $plan = $subscribe->plan();
-    $card = $subscribe->creditCard();
-    $transaction = $card->transaction($plan->price);
+    foreach ($chargeNow as $subscribe) {
+        $user = (new \Source\Models\User())->findById($subscribe->user_id);
+        $plan = $subscribe->plan();
+        $card = $subscribe->creditCard();
+        $transaction = $card->transaction($plan->price);
 
-    //charge control
-    $subscribe->last_charge = date("Y-m-d");
+        //charge control
+        $subscribe->last_charge = date("Y-m-d");
 
-    if ($transaction) {
-      /**
-       * CHARGE SUCCESS
-       */
-      $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$plan->period}"));
-      (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
+        if ($transaction) {
+            /**
+             * CHARGE SUCCESS
+             */
+            $subscribe->status = "active";
+            $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$plan->period}"));
+            (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
 
       $subject = "[PAGAMENTO CONFIRMADO] Obrigado por assinar o CaféApp";
       $body = $view->render("mail", [
@@ -74,12 +75,13 @@ if ($chargeDayS) {
     //charge control
     $subscribe->last_charge = date("Y-m-d");
 
-    if ($transaction) {
-      /**
-       * CHARGE SUCCESS
-       */
-      $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$plan->period}"));
-      (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
+        if ($transaction) {
+            /**
+             * CHARGE SUCCESS
+             */
+            $subscribe->status = "active";
+            $subscribe->next_due = date("Y-m-d", strtotime($subscribe->next_due . "+{$plan->period}"));
+            (new \Source\Models\CafeApp\AppOrder())->byCreditCard($user, $card, $subscribe, $transaction);
 
       $subject = "[PAGAMENTO CONFIRMADO] Obrigado por assinar o CaféApp";
       $body = $view->render("mail", [

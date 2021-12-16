@@ -22,7 +22,7 @@ class AppPlan extends Model
    * @param string|null $status
    * @return AppSubscription|null
    */
-  public function subscribers(?string $status= "active"): ?AppSubscription
+  public function subscribers(?string $status = "active"): ?AppSubscription
   {
     if ($status) {
       return (new AppSubscription())->find("plan_id = :plan AND pay_status = :s", "plan={$this->id}&s={$status}");

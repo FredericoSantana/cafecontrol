@@ -7,7 +7,7 @@ use Source\Core\Session;
 
 /**
  * Class Access
- * @package Source\Model\Report
+ * @package Source\Models\Report
  */
 class Access extends Model
 {
@@ -27,7 +27,7 @@ class Access extends Model
     $find = $this->find("DATE(created_at) = DATE(now())")->fetch();
     $session = new Session();
 
-    if(!$find) {
+    if (!$find) {
       $this->users = 1;
       $this->views = 1;
       $this->pages = 1;
@@ -51,7 +51,6 @@ class Access extends Model
 
     $find->pages += 1;
     $find->save();
-
     return $this;
   }
 }

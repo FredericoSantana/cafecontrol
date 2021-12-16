@@ -12,7 +12,6 @@ use Source\Models\Report\Online;
 use Source\Models\User;
 use Source\Support\Pager;
 
-
 /**
  * Class Web
  * @package Source\App
@@ -45,7 +44,11 @@ class Web extends Controller
     echo $this->view->render("home", [
       "head" => $head,
       "video" => "lDZGl9Wdc7Y",
-      "blog" => (new Post())->findPost()->order("post_at DESC")->limit(6)->fetch(true)
+      "blog" => (new Post())
+        ->findPost()
+        ->order("post_at DESC")
+        ->limit(6)
+        ->fetch(true)
     ]);
   }
 
@@ -57,7 +60,7 @@ class Web extends Controller
     $head = $this->seo->render(
       "Descubra o " . CONF_SITE_NAME . " - " . CONF_SITE_DESC,
       CONF_SITE_DESC,
-      url('/sobre'),
+      url("/sobre"),
       theme("/assets/images/share.jpg")
     );
 
@@ -71,7 +74,6 @@ class Web extends Controller
     ]);
   }
 
-
   /**
    * SITE BLOG
    * @param array|null $data
@@ -81,13 +83,12 @@ class Web extends Controller
     $head = $this->seo->render(
       "Blog - " . CONF_SITE_NAME,
       "Confira em nosso blog dicas e sacadas de como controlar e melhorar as suas contas. Vamos tomar um café?",
-      url('/blog'),
+      url("/blog"),
       theme("/assets/images/share.jpg")
     );
 
     $blog = (new Post())->findPost();
-
-    $pager = new Pager(url("blog/p/"));
+    $pager = new Pager(url("/blog/p/"));
     $pager->pager($blog->count(), 9, ($data['page'] ?? 1));
 
     echo $this->view->render("blog", [
@@ -103,7 +104,7 @@ class Web extends Controller
    */
   public function blogCategory(array $data): void
   {
-    $categoryUri = filter_var($data['category'], FILTER_SANITIZE_STRIPPED);
+    $categoryUri = filter_var($data["category"], FILTER_SANITIZE_STRIPPED);
     $category = (new Category())->findByUri($categoryUri);
 
     if (!$category) {
@@ -142,17 +143,17 @@ class Web extends Controller
   public function blogSearch(array $data): void
   {
     if (!empty($data['s'])) {
-      $search = filter_var($data['s'], FILTER_SANITIZE_STRIPPED);
+      $search = str_search($data['s']);
       echo json_encode(["redirect" => url("/blog/buscar/{$search}/1")]);
       return;
     }
 
-    if (empty($data['terms'])) {
+    $search = str_search($data['search']);
+    $page = (filter_var($data['page'], FILTER_VALIDATE_INT) >= 1 ? $data['page'] : 1);
+
+    if ($search == "all") {
       redirect("/blog");
     }
-
-    $search = filter_var($data['terms'], FILTER_SANITIZE_STRIPPED);
-    $page = (filter_var($data['page'], FILTER_VALIDATE_INT) >= 1 ? $data['page'] : 1);
 
     $head = $this->seo->render(
       "Pesquisa por {$search} - " . CONF_SITE_NAME,
@@ -191,7 +192,6 @@ class Web extends Controller
   public function blogPost(array $data): void
   {
     $post = (new Post())->findByUri($data['uri']);
-
     if (!$post) {
       redirect("/404");
     }
@@ -203,10 +203,10 @@ class Web extends Controller
     }
 
     $head = $this->seo->render(
-      $post->title . " - " . CONF_SITE_NAME,
+      "{$post->title} - " . CONF_SITE_NAME,
       $post->subtitle,
       url("/blog/{$post->uri}"),
-      image($post->cover, 1200, 628)
+      ($post->cover ? image($post->cover, 1200, 628) : theme("/assets/images/share.jpg"))
     );
 
     echo $this->view->render("blog-post", [
@@ -219,7 +219,6 @@ class Web extends Controller
         ->fetch(true)
     ]);
   }
-
 
   /**
    * SITE LOGIN
@@ -239,7 +238,7 @@ class Web extends Controller
       }
 
       if (request_limit("weblogin", 3, 300)) {
-        $json['message'] = $this->message->error("Você já efetuou três tentativas, esse é o limite. Por favor, aguarde por 5 minutos para tentar novamente!")->render();
+        $json['message'] = $this->message->error("Você já efetuou 3 tentativas, esse é o limite. Por favor, aguarde por 5 minutos para tentar novamente!")->render();
         echo json_encode($json);
         return;
       }
@@ -250,7 +249,7 @@ class Web extends Controller
         return;
       }
 
-      $save = !empty($data['save']);
+      $save = (!empty($data['save']) ? true : false);
       $auth = new Auth();
       $login = $auth->login($data['email'], $data['password'], $save);
 
@@ -262,7 +261,6 @@ class Web extends Controller
       }
 
       echo json_encode($json);
-
       return;
     }
 
@@ -279,12 +277,11 @@ class Web extends Controller
     ]);
   }
 
-
   /**
-   * SITE FORGET
+   * SITE PASSWORD FORGET
    * @param null|array $data
    */
-  public function forget(?array $data): void
+  public function forget(?array $data)
   {
     if (Auth::user()) {
       redirect("/app");
@@ -297,13 +294,13 @@ class Web extends Controller
         return;
       }
 
-      if (empty($data['email'])) {
+      if (empty($data["email"])) {
         $json['message'] = $this->message->info("Informe seu e-mail para continuar")->render();
         echo json_encode($json);
         return;
       }
 
-      if (request_repeat("webforget", $data['email'])) {
+      if (request_repeat("webforget", $data["email"])) {
         $json['message'] = $this->message->error("Ooops! Você já tentou este e-mail antes")->render();
         echo json_encode($json);
         return;
@@ -313,13 +310,13 @@ class Web extends Controller
       if ($auth->forget($data['email'])) {
         $json['message'] = $this->message->success("Acesse seu e-mail para recuperar a senha")->render();
       } else {
-        $json['message'] = $auth->message()->before("Ooops! ")->render();
-
+        $json["message"] = $auth->message()->before("Ooops! ")->render();
       }
 
       echo json_encode($json);
       return;
     }
+
     $head = $this->seo->render(
       "Recuperar Senha - " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -349,26 +346,26 @@ class Web extends Controller
         return;
       }
 
-      if (empty($data['password']) || empty($data['password_re'])) {
-        $json['message'] = $this->message->info("Informe e repita a senha para continuar")->render();
+      if (empty($data["password"]) || empty($data["password_re"])) {
+        $json["message"] = $this->message->info("Informe e repita a senha para continuar")->render();
         echo json_encode($json);
         return;
       }
 
-      list($email, $code) = explode("|", $data['code']);
-
+      list($email, $code) = explode("|", $data["code"]);
       $auth = new Auth();
 
-      if($auth->reset($email, $code, $data['password'], $data['password_re'])) {
-        $this->message->success("Senha alterada com sucesso")->flash();
-        $json['redirect'] = url("/entrar");
-      }else{
-        $json['message'] = $auth->message()->before("Ooops! ")->render();
+      if ($auth->reset($email, $code, $data["password"], $data["password_re"])) {
+        $this->message->success("Senha alterada com sucesso. Vamos controlar?")->flash();
+        $json["redirect"] = url("/entrar");
+      } else {
+        $json["message"] = $auth->message()->before("Ooops! ")->render();
       }
 
       echo json_encode($json);
       return;
     }
+
     $head = $this->seo->render(
       "Crie sua nova senha no " . CONF_SITE_NAME,
       CONF_SITE_DESC,
@@ -378,10 +375,9 @@ class Web extends Controller
 
     echo $this->view->render("auth-reset", [
       "head" => $head,
-      "code" => $data['code']
+      "code" => $data["code"]
     ]);
   }
-
 
   /**
    * SITE REGISTER
@@ -389,6 +385,10 @@ class Web extends Controller
    */
   public function register(?array $data): void
   {
+    if (Auth::user()) {
+      redirect("/app");
+    }
+
     if (!empty($data['csrf'])) {
       if (!csrf_verify($data)) {
         $json['message'] = $this->message->error("Erro ao enviar, favor use o formulário")->render();
@@ -405,15 +405,14 @@ class Web extends Controller
       $auth = new Auth();
       $user = new User();
       $user->bootstrap(
-        $data['first_name'],
-        $data['last_name'],
-        $data['email'],
-        $data['password']
+        $data["first_name"],
+        $data["last_name"],
+        $data["email"],
+        $data["password"]
       );
 
       if ($auth->register($user)) {
         $json['redirect'] = url("/confirma");
-
       } else {
         $json['message'] = $auth->message()->before("Ooops! ")->render();
       }
@@ -471,7 +470,7 @@ class Web extends Controller
     }
 
     $head = $this->seo->render(
-      "Bem-vindo(a) ao - " . CONF_SITE_NAME,
+      "Bem-vindo(a) ao " . CONF_SITE_NAME,
       CONF_SITE_DESC,
       url("/obrigado"),
       theme("/assets/images/share.jpg")
@@ -488,7 +487,7 @@ class Web extends Controller
       ],
       "track" => (object)[
         "fb" => "Lead",
-        "aw" => ""
+        "aw" => "AW-953362805/yAFTCKuakIwBEPXSzMYD"
       ]
     ]);
   }
@@ -501,11 +500,13 @@ class Web extends Controller
     $head = $this->seo->render(
       CONF_SITE_NAME . " - Termos de Uso",
       CONF_SITE_DESC,
-      url('/termos'),
+      url("/termos"),
       theme("/assets/images/share.jpg")
     );
 
-    echo $this->view->render("terms", ["head" => $head]);
+    echo $this->view->render("terms", [
+      "head" => $head
+    ]);
   }
 
   /**
@@ -520,7 +521,7 @@ class Web extends Controller
       case "problemas":
         $error->code = "OPS";
         $error->title = "Estamos enfrentando problemas!";
-        $error->message = "Sentimos muito, mas o conteúdo que você tentou acessar não existe, está indisponível no momento ou foi removido :/";
+        $error->message = "Parece que nosso serviço não está diponível no momento. Já estamos vendo isso mas caso precise, envie um e-mail :)";
         $error->linkTitle = "ENVIAR E-MAIL";
         $error->link = "mailto:" . CONF_MAIL_SUPPORT;
         break;
@@ -542,10 +543,9 @@ class Web extends Controller
         break;
     }
 
-
     $head = $this->seo->render(
       "{$error->code} | {$error->title}",
-      "$error->message",
+      $error->message,
       url("/ops/{$error->code}"),
       theme("/assets/images/share.jpg"),
       false

@@ -20,7 +20,8 @@ class AppInvoice extends Model
    */
   public function __construct()
   {
-    parent::__construct("app_invoices", ["id"],
+    parent::__construct(
+      "app_invoices", ["id"],
       ["user_id", "wallet_id", "category_id", "description", "type", "value", "due_at", "repeat_when"]
     );
 
@@ -31,13 +32,118 @@ class AppInvoice extends Model
 
   /**
    * @param User $user
+   * @param array $data
+   * @return $this|null
+   */
+  public function launch(User $user, array $data): ?AppInvoice
+  {
+    $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+
+    if (
+      empty($data["wallet_id"]) || empty($data["category_id"]) || empty($data["description"])
+      || empty($data["type"]) || empty($data["value"]) || empty($data["due_at"])
+      || empty($data["repeat_when"]) || empty($data["period"]) || empty($data["enrollments"])
+    ) {
+      $this->message->error("Faltam dados para lançar essa fatura");
+      return null;
+    }
+
+    $wallet = (new AppWallet())->find("user_id = :user_id AND id = :id",
+      "user_id={$user->id}&id={$data["wallet_id"]}")->fetch();
+
+    if (!$wallet) {
+      $this->message->error("A carteira que você informou não existe");
+      return null;
+    }
+
+    $category = (new AppCategory())->findById($data["category_id"]);
+    if (!$category) {
+      $this->message->error("A categoria que você informou não existe");
+      return null;
+    }
+
+    //PREMIUM RESOURCE
+    $subscribe = (new AppSubscription())->find("user_id = :user AND status != :status",
+      "user={$user->id}&status=canceled");
+
+    if (!$wallet->free && !$subscribe->count()) {
+      $this->message->error("É preciso assinar para lançar nesta carteira");
+      return null;
+    }
+
+    $typeList = ["income", "expense"];
+    if (!in_array($data["type"], $typeList)) {
+      $this->message->error("O tipo da fatura deve ser despesa ou receita");
+      return null;
+    }
+
+    $check = \DateTime::createFromFormat("Y-m-d", $data["due_at"]);
+    if (!$check || $check->format("Y-m-d") != $data["due_at"]) {
+      $this->message->error("O vencimento da fatura não tem um formato válido");
+      return null;
+    }
+
+    $repeatList = ["single", "enrollment", "fixed"];
+    if (!in_array($data["repeat_when"], $repeatList)) {
+      $this->message->error("A repetição da fatura deve ser única, parcelada ou fixa");
+      return null;
+    }
+
+    $periodList = ["month", "year"];
+    if (!in_array($data["period"], $periodList)) {
+      $this->message->error("O período de cobrança da fatura deve ser mensal ou anual");
+      return null;
+    }
+
+    if (!empty($data["enrollments"]) && ($data["enrollments"] < 1 || $data["enrollments"] > 420)) {
+      $this->message->error("O número de parcelas da fatura deve estar entre 1 e 420");
+      return null;
+    }
+
+    $status = (date($data["due_at"]) <= date("Y-m-d") ? "paid" : "unpaid");
+
+    $this->user_id = $user->id;
+    $this->wallet_id = $data["wallet_id"];
+    $this->category_id = $data["category_id"];
+    $this->invoice_of = null;
+    $this->description = $data["description"];
+    $this->type = ($data["repeat_when"] == "fixed" ? "fixed_{$data["type"]}" : $data["type"]);
+    $this->value = $data["value"];
+    $this->currency = "BRL";
+    $this->due_at = $data["due_at"];
+    $this->repeat_when = $data["repeat_when"];
+    $this->period = $data["period"];
+    $this->enrollments = $data["enrollments"];
+    $this->enrollment_of = 1;
+    $this->status = ($data["repeat_when"] == "fixed" ? "paid" : $status);
+
+    if (!$this->save()) {
+      return null;
+    }
+
+    if ($this->repeat_when == "enrollment") {
+      $invoiceOf = $this->id;
+      for ($enrollment = 1; $enrollment < $this->enrollments; $enrollment++) {
+        $this->id = null;
+        $this->invoice_of = $invoiceOf;
+        $this->due_at = date("Y-m-d", strtotime($data["due_at"] . "+{$enrollment}month"));
+        $this->status = (date($this->due_at) <= date("Y-m-d") ? "paid" : "unpaid");
+        $this->enrollment_of = $enrollment + 1;
+        $this->save();
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * @param User $user
    * @param int $afterMonths
    * @throws \Exception
    */
   public function fixed(User $user, int $afterMonths = 1): void
   {
-    $fixed = $this->find(
-      "user_id = :user AND status = 'paid' AND type IN('fixed_income', 'fixed_expense') {$this->wallet}",
+    $fixed = $this->find("user_id = :user AND status = 'paid' AND type IN('fixed_income', 'fixed_expense') {$this->wallet}",
       "user={$user->id}")->fetch(true);
 
     if (!$fixed) {
@@ -59,11 +165,9 @@ class AppInvoice extends Model
 
       $period = new \DatePeriod($start, $interval, $end);
       foreach ($period as $item) {
-        $getFixed = $this->find(
-          "user_id = :user AND invoice_of = :of AND year(due_at) = :y AND month(due_at) = :m",
+        $getFixed = $this->find("user_id = :user AND invoice_of = :of AND year(due_at) = :y AND month(due_at) = :m",
           "user={$user->id}&of={$fixedItem->id}&y={$item->format("Y")}&m={$item->format("m")}",
-          "id"
-        )->fetch();
+          "id")->fetch();
 
         if (!$getFixed) {
           $newItem = $fixedItem;
@@ -71,7 +175,7 @@ class AppInvoice extends Model
           $newItem->invoice_of = $invoice;
           $newItem->type = str_replace("fixed_", "", $newItem->type);
           $newItem->due_at = $item->format("Y-m-d");
-          $newItem->status = ($item->format("Y-m-d") <= date("Y-m-d") ? 'paid' : 'unpaid');
+          $newItem->status = ($item->format("Y-m-d") <= date("Y-m-d") ? "paid" : "unpaid");
           $newItem->save();
         }
       }
@@ -107,6 +211,14 @@ class AppInvoice extends Model
   }
 
   /**
+   * @return mixed|Model|null
+   */
+  public function wallet()
+  {
+    return (new AppWallet())->findById($this->wallet_id);
+  }
+
+  /**
    * @return AppCategory
    */
   public function category(): AppCategory
@@ -126,8 +238,7 @@ class AppInvoice extends Model
     $balance->wallet = 0;
     $balance->balance = "positive";
 
-    $find = $this->find(
-      "user_id = :user AND status = :status",
+    $find = $this->find("user_id = :user AND status = :status",
       "user={$user->id}&status=paid",
       "
           (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'income' {$this->wallet}) AS income,
@@ -140,6 +251,7 @@ class AppInvoice extends Model
       $balance->wallet = $balance->income - $balance->expense;
       $balance->balance = ($balance->wallet >= 1 ? "positive" : "negative");
     }
+
     return $balance;
   }
 
@@ -155,14 +267,12 @@ class AppInvoice extends Model
     $balance->wallet = 0;
     $balance->balance = "positive";
 
-    $find = $this->find(
-      "user_id = :user AND status = :status",
+    $find = $this->find("user_id = :user AND status = :status",
       "user={$wallet->user_id}&status=paid",
       "
         (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND wallet_id = {$wallet->id} AND status = :status AND type = 'income') AS income,
         (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND wallet_id = {$wallet->id} AND status = :status AND type = 'expense') AS expense,
-      "
-    )->fetch();
+      ")->fetch();
 
     if ($find) {
       $balance->income = abs($find->income);
@@ -187,9 +297,9 @@ class AppInvoice extends Model
       "user_id = :user",
       "user={$user->id}&type={$type}&year={$year}&month={$month}",
       "
-      (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'paid' {$this->wallet}) AS paid,
-      (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'unpaid' {$this->wallet}) AS unpaid,
-      "
+                (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'paid' {$this->wallet}) AS paid,
+                (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND type = :type AND year(due_at) = :year AND month(due_at) = :month AND status = 'unpaid' {$this->wallet}) AS unpaid
+            "
     )->fetch();
 
     if (!$onpaid) {
@@ -219,7 +329,7 @@ class AppInvoice extends Model
     $chartData->income = "0,0,0,0,0";
 
     $chart = (new AppInvoice())
-      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 5 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
+      ->find("user_id = :user AND status = :status AND due_at >= DATE(now() - INTERVAL 4 MONTH) GROUP BY year(due_at) ASC, month(due_at) ASC",
         "user={$user->id}&status=paid",
         "
              year(due_at) AS due_year,
@@ -228,8 +338,7 @@ class AppInvoice extends Model
              (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'income' AND year(due_at) = due_year AND month(due_at) = due_month {$this->wallet}) AS income,
              (SELECT SUM(value) FROM app_invoices WHERE user_id = :user AND status = :status AND type = 'expense' AND year(due_at) = due_year AND month(due_at) = due_month {$this->wallet}) AS expense
              "
-      )->limit(5)
-      ->fetch(true);
+      )->limit(5)->fetch(true);
 
     if ($chart) {
       $chartCategories = [];
@@ -248,6 +357,5 @@ class AppInvoice extends Model
     }
 
     return $chartData;
-
   }
 }

@@ -21,7 +21,7 @@ class Category extends Model
   /**
    * @param string $uri
    * @param string $columns
-   * @return Category|null
+   * @return null|Category
    */
   public function findByUri(string $uri, string $columns = "*"): ?Category
   {

@@ -2,7 +2,6 @@
 
 namespace Source\Core;
 
-use Source\Models\User;
 use Source\Support\Message;
 
 /**
@@ -19,7 +18,7 @@ abstract class Model
   /** @var \PDOException|null */
   protected $fail;
 
-  /** @var string */
+  /** @var Message|null */
   protected $message;
 
   /** @var string */
@@ -41,10 +40,10 @@ abstract class Model
   protected $entity;
 
   /** @var array $protected no update or create */
-  protected array $protected;
+  protected $protected;
 
   /** @var array $entity database table */
-  protected array $required;
+  protected $required;
 
   /**
    * Model constructor.
@@ -116,8 +115,8 @@ abstract class Model
   }
 
   /**
-   * @param string|null $terms
-   * @param string|null $params
+   * @param null|string $terms
+   * @param null|string $params
    * @param string $columns
    * @return Model|mixed
    */
@@ -130,7 +129,6 @@ abstract class Model
     }
 
     $this->query = "SELECT {$columns} FROM {$this->entity}";
-
     return $this;
   }
 
@@ -182,22 +180,20 @@ abstract class Model
   public function fetch(bool $all = false)
   {
     try {
-      $stmt = Connect::getInstance()->prepare($this->query.$this->order.$this->limit.$this->offset);
+      $stmt = Connect::getInstance()->prepare($this->query . $this->order . $this->limit . $this->offset);
       $stmt->execute($this->params);
 
       if (!$stmt->rowCount()) {
         return null;
       }
 
-      //Traz um array com o objeto da classe
       if ($all) {
         return $stmt->fetchAll(\PDO::FETCH_CLASS, static::class);
       }
 
       //Traz diretamente um objeto da classe
       return $stmt->fetchObject(static::class);
-
-    }catch (\PDOException $exception) {
+    } catch (\PDOException $exception) {
       $this->fail = $exception;
       return null;
     }
@@ -300,10 +296,9 @@ abstract class Model
     return Connect::getInstance()->query("SELECT MAX(id) as maxId FROM {$this->entity}")->fetch()->maxId + 1;
   }
 
-
   /**
    * @param string $terms
-   * @param string|null $params
+   * @param null|string $params
    * @return bool
    */
   public function delete(string $terms, ?string $params): bool
@@ -315,6 +310,7 @@ abstract class Model
         $stmt->execute($params);
         return true;
       }
+
       $stmt->execute();
       return true;
     } catch (\PDOException $exception) {
@@ -331,6 +327,7 @@ abstract class Model
     if (empty($this->id)) {
       return false;
     }
+
     $destroy = $this->delete("id = :id", "id={$this->id}");
     return $destroy;
   }

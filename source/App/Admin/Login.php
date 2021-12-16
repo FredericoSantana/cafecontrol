@@ -22,13 +22,13 @@ class Login extends Controller
   /**
    * Admin access redirect
    */
-  public function root():void
+  public function root(): void
   {
     $user = Auth::user();
 
     if ($user && $user->level >= 5) {
       redirect("/admin/dash");
-    }else{
+    } else {
       redirect("/admin/login");
     }
   }
@@ -57,7 +57,7 @@ class Login extends Controller
 
       if ($login) {
         $json["redirect"] = url("/admin/dash");
-      }else{
+      } else {
         $json["message"] = $auth->message()->render();
       }
 

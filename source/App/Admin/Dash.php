@@ -2,7 +2,6 @@
 
 namespace Source\App\Admin;
 
-
 use Source\Models\Auth;
 use Source\Models\CafeApp\AppPlan;
 use Source\Models\CafeApp\AppSubscription;
@@ -25,11 +24,18 @@ class Dash extends Admin
     parent::__construct();
   }
 
-  public function dash()
+  /**
+   *
+   */
+  public function dash(): void
   {
     redirect("/admin/dash/home");
   }
 
+  /**
+   * @param array|null $data
+   * @throws \Exception
+   */
   public function home(?array $data): void
   {
     //Real Time Access
@@ -40,12 +46,13 @@ class Dash extends Admin
         foreach ($items as $item) {
           $list[] = [
             "dates" => date_fmt($item->created_at, "H\hi") . " - " . date_fmt($item->updated_at, "H\hi"),
-            "user" => ($item->user ? $item->user()->full_name() : "Guest User"),
+            "user" => ($item->user ? $item->user()->fullName() : "Guest User"),
             "pages" => $item->pages,
             "url" => $item->url
           ];
         }
       }
+
       echo json_encode([
         "count" => (new Online())->findByActive(true),
         "list" => $list
@@ -83,6 +90,9 @@ class Dash extends Admin
     ]);
   }
 
+  /**
+   *
+   */
   public function logoff(): void
   {
     $this->message->success("Você saiu com sucesso {$this->user->first_name}.")->flash();

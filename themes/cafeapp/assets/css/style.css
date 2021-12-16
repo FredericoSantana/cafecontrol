@@ -1034,18 +1034,18 @@ body {
     background: #ffffff;
 }
 
-.app_signature_detail li span{
+.app_signature_detail li span {
     flex-basis: 50%;
     padding: 15px;
     color: #888888;
 }
 
-.app_signature_info{
+.app_signature_info {
     color: #888888;
     font-size: var(--font-small);
 }
 
-.app_signature_orders_item{
+.app_signature_orders_item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1054,11 +1054,11 @@ body {
     text-align: center;
 }
 
-.app_signature_orders_item:nth-child(2n+0){
+.app_signature_orders_item:nth-child(2n+0) {
     background: #FAFAFA;
 }
 
-.app_signature_orders_item p{
+.app_signature_orders_item p {
     padding: 15px;
     flex-basis: 33.33%;
 }
