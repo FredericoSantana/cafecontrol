@@ -3,6 +3,8 @@
 namespace Source\App\CafeApi;
 
 use Source\Models\CafeApp\AppInvoice;
+use Source\Support\Thumb;
+use Source\Support\Upload;
 
 /**
  * Class Users
@@ -88,10 +90,46 @@ class Users extends CafeApi
   }
 
   /**
-   *
+   * @throws \Exception
    */
-  public function photo()
+  public function photo(): void
   {
+    $request = $this->requestLimit("usersPhoto", 3, 60);
+    if (!$request) {
+      return;
+    }
 
+    $photo = (!empty($_FILES["photo"]) ? $_FILES["photo"] : null);
+    if (!$photo) {
+      $this->call(
+        400,
+        "invalid_data",
+        "Envie uma imagem JPG ou PNG para atualizar a foto"
+      )->back();
+      return;
+    }
+    
+    chdir("../");
+    
+    $upload = new Upload();
+    $newPhoto = $upload->image($photo, $this->user->fullName(), 600);
+
+    if (!$newPhoto) {
+      $this->call(
+        400,
+        "invalid_data",
+        $upload->message()->getText()
+      )->back();
+      return;
+    }
+
+    if ($this->user->photo() && $newPhoto != $this->user->photo) {
+      unlink(__DIR__ . "/../../../" . CONF_UPLOAD_DIR . "/{$this->user->photo}");
+      (new Thumb())->flush($this->user->photo);
+    }
+
+    $this->user->photo = $newPhoto;
+    $this->user->save();
+    $this->index();
   }
 }

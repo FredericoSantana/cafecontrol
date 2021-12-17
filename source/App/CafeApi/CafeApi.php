@@ -138,6 +138,7 @@ class CafeApi extends Controller
         "invalid_data",
         "Você precisa informar seu e-mail e senha para continuar"
       )->back();
+
       return false;
     }
 
