@@ -7,8 +7,14 @@ use Source\Models\CafeApp\AppInvoice;
 use Source\Models\CafeApp\AppWallet;
 use Source\Support\Pager;
 
+/**
+ *
+ */
 class Invoices extends CafeApi
 {
+  /**
+   * @throws \Exception
+   */
   public function __construct()
   {
     parent::__construct();
@@ -72,6 +78,10 @@ class Invoices extends CafeApi
     return;
   }
 
+  /**
+   * @param array $data
+   * @throws \Exception
+   */
   public function create(array $data): void
   {
     $request = $this->requestLimit("invoicesCreate", 5, 60);
@@ -94,6 +104,9 @@ class Invoices extends CafeApi
     $this->back(["invoice" => $invoice->data()]);
   }
 
+  /**
+   * @param array $data
+   */
   public function read(array $data): void
   {
     if (empty($data["invoice_id"]) || !$invoice_id = filter_var($data["invoice_id"], FILTER_VALIDATE_INT)) {
@@ -124,11 +137,104 @@ class Invoices extends CafeApi
     $this->back($response);
   }
 
+  /**
+   * @param array $data
+   */
   public function update(array $data): void
   {
+    $data = filter_var_array($data, FILTER_SANITIZE_STRIPPED);
+    if (empty($data["invoice_id"]) || !$invoice_id = filter_var($data["invoice_id"], FILTER_VALIDATE_INT)) {
+      $this->call(
+        400,
+        "invalid",
+        "Informe o ID do lançamento que deseja atualizar"
+      )->back();
+    }
 
+    $invoice = (new AppInvoice())->find("user_id = :user_id AND id = :id",
+    "user_id={$this->user->id}&id={$invoice_id}")->fetch();
+
+    if (!$invoice) {
+      $this->call(
+        404,
+        "not_found",
+        "Você tentou atualizar um lançamento que não existe"
+      )->back();
+      return;
+    }
+
+    if (!empty($data["wallet_id"]) && $wallet_id = filter_var($data["wallet_id"], FILTER_VALIDATE_INT)) {
+      $wallet = (new AppWallet())->find("user_id = :user_id AND id = :id",
+        "user_id={$this->user->id}&id={$wallet_id}")->fetch();
+
+      if (!$wallet) {
+        $this->call(
+          400,
+          "invalid_data",
+          "Você informou uma carteira que não existe"
+        )->back();
+        return;
+      }
+    }
+
+    if (!empty($data["category_id"]) && $category_id = filter_var($data["category_id"], FILTER_VALIDATE_INT)) {
+      $category = (new AppCategory())->findById($category_id);
+
+      if (!$category) {
+        $this->call(
+          400,
+          "invalid_data",
+          "Você informou uma categoria que não existe"
+        )->back();
+        return;
+      }
+    }
+
+    if (!empty($data["due_day"])) {
+      if ($data["due_day"] < 1 || $data["due_day"] > 28) {
+        $this->call(
+          400,
+          "invalid_data",
+          "O dia de vencimento deve estar entre 1 e 28"
+        )->back();
+        return;
+      }
+
+      $due_at = date("Y-m", strtotime($invoice->due_at)) . "-" . $data["due_day"];
+    }
+
+    $statusList = ["paid", "unpaid"];
+    if (!empty($data["status"]) && !in_array($data["status"], $statusList)) {
+      $this->call(
+        400,
+        "invalid_data",
+        "O status do lançamento deve ser pago ou não pago"
+      )->back();
+      return;
+    }
+
+    $invoice->wallet_id = (!empty($data["wallet_id"]) ? $data["wallet_id"] : $invoice->wallet_id);
+    $invoice->category_id = (!empty($data["category_id"]) ? $data["category_id"] : $invoice->category_id);
+    $invoice->description = (!empty($data["description"]) ? $data["description"] : $invoice->description);
+    $invoice->value = (!empty($data["value"]) ? $data["value"] : $invoice->value);
+    $invoice->due_at = (!empty($data["due_at"]) ? date("Y-m-d", strtotime($due_at)) : $invoice->due_at);
+    $invoice->status = (!empty($data["status"]) ? $data["status"] : $invoice->status);
+
+    if (!$invoice->save()) {
+      $this->call(
+        400,
+        "invalid_data",
+        $invoice->message()->getText()
+      )->back();
+      return;
+    }
+
+    $this->back(["invoice" => $invoice->data()]);
   }
 
+  /**
+   * @param array $data
+   */
   public function delete(array $data): void
   {
     if (empty($data["invoice_id"]) || !$invoice_id = filter_var($data["invoice_id"], FILTER_VALIDATE_INT)) {
