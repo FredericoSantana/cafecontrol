@@ -149,10 +149,10 @@ class CafeApi extends Controller
 
     $cacheFile = "{$cacheDir}/{$userToken}.json";
     if (!file_exists($cacheFile) || !is_file($cacheFile)) {
-      fopen($cacheFile,"w");
+      fopen($cacheFile, "w");
     }
 
-    $userCache = json_encode(file_get_contents($cacheFile));
+    $userCache = json_decode(file_get_contents($cacheFile));
     $cache = (array)$userCache;
 
     $save = function ($cacheFile, $cache) {
@@ -179,7 +179,7 @@ class CafeApi extends Controller
       $this->call(
         400,
         "request_limit",
-        "Você recebeu o limite de requisições para essa ação"
+        "Você excedeu o limite de requisições para essa ação"
       )->back();
 
       return false;
@@ -188,7 +188,7 @@ class CafeApi extends Controller
     if (!$attempt) {
       $cache[$endpoint] = [
         "limit" => $limit,
-        "request" => $cache[$endpoint]->requests + 1,
+        "requests" => $cache[$endpoint]->requests + 1,
         "time" => $cache[$endpoint]->time
       ];
 
