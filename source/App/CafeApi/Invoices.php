@@ -2,7 +2,9 @@
 
 namespace Source\App\CafeApi;
 
+use Source\Models\CafeApp\AppCategory;
 use Source\Models\CafeApp\AppInvoice;
+use Source\Models\CafeApp\AppWallet;
 use Source\Support\Pager;
 
 class Invoices extends CafeApi
@@ -72,12 +74,54 @@ class Invoices extends CafeApi
 
   public function create(array $data): void
   {
+    $request = $this->requestLimit("invoicesCreate", 5, 60);
+    if (!$request) {
+      return;
+    }
 
+    $invoice = new AppInvoice();
+
+    if (!$invoice->launch($this->user, $data)) {
+      $this->call(
+        400,
+        "invalid_data",
+        $invoice->message()->getText()
+      )->back();
+      return;
+    }
+
+    $invoice->fixed($this->user, 3);
+    $this->back(["invoice" => $invoice->data()]);
   }
 
   public function read(array $data): void
   {
+    if (empty($data["invoice_id"]) || !$invoice_id = filter_var($data["invoice_id"], FILTER_VALIDATE_INT)) {
+      $this->call(
+        400,
+        "invalid_data",
+        "É preciso informar o ID da fatura que deseja consultar"
+      )->back();
+      return;
+    }
 
+    $invoice = (new AppInvoice())->find("user_id = :user_id AND id = :id",
+    "user_id={$this->user->id}&id={$invoice_id}")->fetch();
+
+    if (!$invoice) {
+      $this->call(
+        400,
+        "not_found",
+        "Você tentou acessar uma fatura que não existe"
+      )->back();
+      return;
+    }
+
+    $response["invoice"] = $invoice->data();
+    $response["invoice"]->wallet = (new AppWallet())->findById($invoice->wallet_id)->data();
+    $response["invoice"]->category = (new AppCategory())->findById($invoice->category_id)->data();
+
+    $this->back($response);
   }
 
   public function update(array $data): void
@@ -87,6 +131,33 @@ class Invoices extends CafeApi
 
   public function delete(array $data): void
   {
+    if (empty($data["invoice_id"]) || !$invoice_id = filter_var($data["invoice_id"], FILTER_VALIDATE_INT)) {
+      $this->call(
+        400,
+        "invalid_data",
+        "Informe o ID do lançamento que deseja deletar"
+      )->back();
+      return;
+    }
 
+    $invoice = (new AppInvoice())->find("user_id = :user_id AND id = :id",
+      "user_id={$this->user->id}&id={$invoice_id}")->fetch();
+
+    if (!$invoice) {
+      $this->call(
+        400,
+        "not_found",
+        "Você tentou excluir um lançamento que não existe"
+      )->back();
+      return;
+    }
+
+    $invoice->destroy();
+    $this->call(
+      200,
+      "success",
+      "O lançamento foi excluído com sucesso",
+      "accepted"
+    )->back();
   }
 }
