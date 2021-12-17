@@ -51,10 +51,10 @@ class CafeApi extends Controller
    * @param int $code
    * @param string|null $type
    * @param string|null $message
-   * @param string $run
-   * @return $this
+   * @param string $rule
+   * @return CafeApi
    */
-  protected function call(int $code, string $type = null, string $message = null, string $run = "errors"): CafeApi
+  protected function call(int $code, string $type = null, string $message = null, string $rule = "errors"): CafeApi
   {
     http_response_code($code);
 
@@ -71,7 +71,7 @@ class CafeApi extends Controller
 
   /**
    * @param array|null $response
-   * @return $this
+   * @return CafeApi
    */
   protected function back(array $response = null): CafeApi
   {

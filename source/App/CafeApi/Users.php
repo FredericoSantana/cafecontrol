@@ -40,7 +40,51 @@ class Users extends CafeApi
    */
   public function update(array $data): void
   {
+    $request = $this->requestLimit("usersUpdate", 5, 60);
+    if (!$request) {
+      return;
+    }
+    
+    $data = filter_var_array($data,FILTER_SANITIZE_STRIPPED);
 
+    $genreList = ["female", "male", "other"];
+    if (!empty($data["genre"]) && !in_array($data["genre"], $genreList)) {
+      $this->call(
+        400,
+        "invalid_data",
+        "Favor informe o gênero como feminino, masculino ou outro"
+      )->back();
+      return;
+    }
+
+    if (!empty($data["datebirth"])) {
+      $check = \DateTime::createFromFormat("Y-m-d", $data["datebirth"]);
+      if (!$check || $check->format("Y-m-d") != $data["datebirth"]) {
+        $this->call(
+          400,
+          "invalid_data",
+          "Favor informe uma data de nascimento válida"
+        )->back();
+        return;
+      }
+    }
+
+    $this->user->first_name = (!empty($data["first_name"]) ? $data["first_name"] : $this->user->first_name);
+    $this->user->last_name = (!empty($data["last_name"]) ? $data["last_name"] : $this->user->last_name);
+    $this->user->genre = (!empty($data["genre"]) ? $data["genre"] : $this->user->genre);
+    $this->user->datebirth = (!empty($data["datebirth"]) ? $data["datebirth"] : $this->user->datebirth);
+    $this->user->document = (!empty($data["document"]) ? $data["document"] : $this->user->document);
+
+    if (!$this->user->save()) {
+      $this->call(
+        400,
+        "invalid_data",
+        $this->user->message()->getText()
+      )->back();
+      return;
+    }
+
+    $this->index();
   }
 
   /**
